@@ -19,6 +19,10 @@ public class TeaVMLauncher {
         //// If width and height are both -1, then the app will fill the canvas size.
         config.width = -1;
         config.height = -1;
+
+        config.showDownloadLogs = true;
+        config.preloadAssets = true;
+
         new TeaApplication(new RapidTrack(), config);
     }
 }

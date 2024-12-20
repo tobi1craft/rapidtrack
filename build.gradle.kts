@@ -47,7 +47,7 @@ configure(subprojects) {
             // delete that file in case we've already created it
             assetsFile.delete()
 
-            // iterate through all files inside that folder
+            // iterate through all files inside that folder,
             // convert it to a relative path
             // and append it to the file assets.txt
             fileTree(assetsFolder).map { assetsFolder.toPath().relativize(it.toPath()).toString() }
