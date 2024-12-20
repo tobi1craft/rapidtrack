@@ -4,12 +4,14 @@ apply plugin: 'application'
 java.sourceCompatibility = 21
 java.targetCompatibility = 21
 if (JavaVersion.current().isJava9Compatible()) {
-        compileJava.options.release.set(21)
+  compileJava.options.release.set(21)
 }
 
 mainClassName = 'de.tobi1craft.rapidtrack.server.ServerLauncher'
-application.setMainClass(mainClassName)
-eclipse.project.name = appName + '-server'
+
+application {
+  mainClass = mainClassName
+}
 
 dependencies {
   implementation project(':shared')

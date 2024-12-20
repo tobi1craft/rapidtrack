@@ -1,6 +1,6 @@
 plugins {
   id 'java'
-  id 'org.gretty' version '3.1.0'
+  id 'org.gretty' version '4.1.6'
 }
 
 gretty {
@@ -10,7 +10,6 @@ gretty {
 
 sourceSets.main.resources.srcDirs += [ rootProject.file('assets').path ]
 project.ext.mainClassName = 'de.tobi1craft.rapidtrack.teavm.TeaVMBuilder'
-eclipse.project.name = appName + '-teavm'
 
 // This must be at least 11, and no higher than the JDK version this project is built with.
 java.targetCompatibility = "21"
