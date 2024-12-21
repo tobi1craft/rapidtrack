@@ -17,14 +17,16 @@ java {
 }
 
 dependencies {
+    implementation("com.badlogicgames.gdx:gdx:${property("gdxVersion")}") //??? https://github.com/xpenatan/gdx-teavm/blob/master/examples/core/teavm/build.gradle
+
     implementation("com.github.xpenatan.gdx-teavm:backend-teavm:${property("gdxTeaVMVersion")}")
     implementation("com.github.xpenatan.gdx-teavm:gdx-bullet-teavm:1.0.0-b6")
-    implementation("org.teavm:teavm-classlib:${property("teaVMVersion")}")
-    implementation("org.teavm:teavm-core:${property("teaVMVersion")}")
-    implementation("org.teavm:teavm-jso-apis:${property("teaVMVersion")}")
-    implementation("org.teavm:teavm-jso-impl:${property("teaVMVersion")}")
-    implementation("org.teavm:teavm-jso:${property("teaVMVersion")}")
-    implementation("org.teavm:teavm-tooling:${property("teaVMVersion")}")
+//    implementation("org.teavm:teavm-classlib:${property("teaVMVersion")}")
+//    implementation("org.teavm:teavm-core:${property("teaVMVersion")}")
+//    implementation("org.teavm:teavm-jso-apis:${property("teaVMVersion")}")
+//    implementation("org.teavm:teavm-jso-impl:${property("teaVMVersion")}")
+//    implementation("org.teavm:teavm-jso:${property("teaVMVersion")}")
+//    implementation("org.teavm:teavm-tooling:${property("teaVMVersion")}")
     implementation(project(":core"))
 }
 
