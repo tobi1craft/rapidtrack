@@ -23,6 +23,10 @@ public class TeaVMLauncher {
         config.showDownloadLogs = true;
         config.preloadAssets = true;
 
+        config.preloadListener = assetLoader -> {
+            assetLoader.loadScript("freetype.js");
+        };
+
         new TeaApplication(new RapidTrack(), config);
     }
 }

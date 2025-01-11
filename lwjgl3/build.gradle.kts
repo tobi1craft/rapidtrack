@@ -42,6 +42,7 @@ dependencies {
     implementation("com.badlogicgames.gdx:gdx-backend-lwjgl3:${property("gdxVersion")}")
     implementation("com.badlogicgames.gdx:gdx-bullet-platform:${property("gdxVersion")}:natives-desktop")
     implementation("com.badlogicgames.gdx:gdx-platform:${property("gdxVersion")}:natives-desktop")
+    implementation("com.badlogicgames.gdx:gdx-freetype-platform:${property("gdxVersion")}:natives-desktop")
     implementation(project(":core"))
 
     if (property("enableGraalNative") == "true") {
@@ -53,6 +54,7 @@ dependencies {
 val os = System.getProperty("os.name").lowercase(Locale.getDefault())
 
 tasks.named<JavaExec>("run") {
+    outputs.upToDateWhen { false }
     workingDir = rootProject.file("assets")
     isIgnoreExitValue = true
     if (os.contains("mac")) {
