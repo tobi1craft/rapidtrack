@@ -66,6 +66,7 @@ tasks.named<Jar>("jar") {
     archiveFileName.set("${project.extra["humanName"] as String}-${project.property("projectVersion")}.jar")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     dependsOn(configurations.runtimeClasspath)
+    from(rootProject.file("assets"))
     from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
     exclude("META-INF/INDEX.LIST", "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
     dependencies {
