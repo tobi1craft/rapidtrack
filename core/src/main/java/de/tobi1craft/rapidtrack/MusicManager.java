@@ -1,6 +1,5 @@
 package de.tobi1craft.rapidtrack;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import de.tobi1craft.rapidtrack.Enums.Screens;
@@ -8,7 +7,11 @@ import de.tobi1craft.rapidtrack.Enums.Screens;
 public class MusicManager {
     private final RapidTrack rapidTrack;
     private final AssetManager assets;
-    private final String[] mainMusic;
+    private final String[] mainMusic = {
+        "music/main/start.mp3",
+        "menu_short.wav",
+        "menu_ultrashort.wav"
+    };
     private String current;
     private Music music;
     private float volume;
@@ -22,8 +25,6 @@ public class MusicManager {
             assets.finishLoadingAsset("music/startup.wav");
             startup();
         }
-        // Find all music files from the main menu folder and filter out the start
-        mainMusic = Gdx.files.internal("music/main").file().list((dir, name) -> !name.contains("start"));
     }
 
     public void setScreen(Screens screen) {
@@ -56,7 +57,7 @@ public class MusicManager {
         music.setLooping(false);
         music.play();
 
-        assets.load("music/main/start.mp3", Music.class);
+        assets.load(mainMusic[0], Music.class);
         music.setOnCompletionListener(completedMusic -> {
             assets.unload("music/startup.wav");
             rapidTrack.start();
@@ -66,14 +67,14 @@ public class MusicManager {
     private void mainMenu(boolean start) {
         if (music.isPlaying()) music.stop();
         if (volume == 0) return;
-        if (start) current = "music/main/start.mp3";
+        if (start) current = mainMusic[0];
         music = assets.get(current, Music.class);
         music.setVolume(volume);
         music.setLooping(false);
         music.play();
 
         String old = current;
-        current = "music/main/" + mainMusic[(int) (Math.random() * mainMusic.length)];
+        current = "music/main/" + mainMusic[(int) (Math.random() * (mainMusic.length - 1)) + 1];
         assets.load(current, Music.class);
 
         music.setOnCompletionListener(completedMusic -> {
