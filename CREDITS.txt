@@ -1,0 +1,3 @@
+LiGDX: https://libgdx.com
+Quantum Horizon UI: https://github.com/czyzby/gdx-skins/tree/master/quantum-horizon
+Music: Südfrucht/Eric
