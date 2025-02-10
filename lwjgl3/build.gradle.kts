@@ -81,7 +81,6 @@ tasks.named<Jar>("jar") {
 }
 
 construo {
-    //TODO: include assets
     name.set(project.extra["appName"] as String)
     humanName.set(project.extra["humanName"] as String)
     //version.set(project.property("projectVersion"))

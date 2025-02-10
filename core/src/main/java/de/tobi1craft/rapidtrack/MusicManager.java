@@ -8,7 +8,7 @@ public class MusicManager {
     private final RapidTrack rapidTrack;
     private final AssetManager assets;
     private final String[] mainMusic = {
-        "music/main/start.mp3",
+        "start.mp3",
         "menu_short.wav",
         "menu_ultrashort.wav"
     };
@@ -28,7 +28,14 @@ public class MusicManager {
     }
 
     public void setScreen(Screens screen) {
-        if (screen == Screens.MAIN_MENU) mainMenu(true);
+        switch (screen) {
+            case MAIN_MENU, SETTINGS -> {
+                Screens s = rapidTrack.getScreen();
+                if (s == Screens.MAIN_MENU || s == Screens.SETTINGS) break;
+                mainMenu(true);
+            }
+            //TODO: start music for other screens
+        }
     }
 
     public void pause() {
@@ -43,7 +50,7 @@ public class MusicManager {
         if (volume == this.volume) return;
         if (this.volume == 0) {
             switch (rapidTrack.getScreen()) {
-                case MAIN_MENU -> mainMenu(false);
+                case MAIN_MENU, SETTINGS -> mainMenu(false);
                 //TODO: start music for other screens
             }
         }
@@ -57,7 +64,7 @@ public class MusicManager {
         music.setLooping(false);
         music.play();
 
-        assets.load(mainMusic[0], Music.class);
+        assets.load("music/main/" + mainMusic[0], Music.class);
         music.setOnCompletionListener(completedMusic -> {
             assets.unload("music/startup.wav");
             rapidTrack.start();
@@ -67,7 +74,7 @@ public class MusicManager {
     private void mainMenu(boolean start) {
         if (music.isPlaying()) music.stop();
         if (volume == 0) return;
-        if (start) current = mainMusic[0];
+        if (start) current = "music/main/" + mainMusic[0];
         music = assets.get(current, Music.class);
         music.setVolume(volume);
         music.setLooping(false);
