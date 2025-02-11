@@ -1,12 +1,12 @@
 package de.tobi1craft.rapidtrack;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
-import de.tobi1craft.rapidtrack.Enums.Screens;
+import de.tobi1craft.rapidtrack.enums.Screens;
+import de.tobi1craft.rapidtrack.util.ForceAssetManager;
 
 public class MusicManager {
     private final RapidTrack rapidTrack;
-    private final AssetManager assets;
+    private final ForceAssetManager assets;
     private final String[] mainMusic = {
         "start.mp3",
         "menu_short.wav",
@@ -16,13 +16,11 @@ public class MusicManager {
     private Music music;
     private float volume;
 
-    public MusicManager(RapidTrack instance, AssetManager assetManager, float volume) {
+    public MusicManager(RapidTrack instance, ForceAssetManager assetManager, float volume) {
         rapidTrack = instance;
         assets = assetManager;
         this.volume = volume;
         if (volume != 0) {
-            assets.load("music/startup.wav", Music.class);
-            assets.finishLoadingAsset("music/startup.wav");
             startup();
         }
     }
@@ -59,7 +57,7 @@ public class MusicManager {
     }
 
     public void startup() {
-        music = assets.get("music/startup.wav", Music.class);
+        music = assets.forceGet("music/startup.wav", Music.class);
         music.setVolume(volume);
         music.setLooping(false);
         music.play();

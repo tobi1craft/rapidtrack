@@ -1,4 +1,4 @@
-package de.tobi1craft.rapidtrack.Menus;
+package de.tobi1craft.rapidtrack.menus;
 
 public class MainMenu extends Menu {
 

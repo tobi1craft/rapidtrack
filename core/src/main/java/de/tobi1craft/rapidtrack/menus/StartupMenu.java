@@ -1,4 +1,4 @@
-package de.tobi1craft.rapidtrack.Menus;
+package de.tobi1craft.rapidtrack.menus;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;

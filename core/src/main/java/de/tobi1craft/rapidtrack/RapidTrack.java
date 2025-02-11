@@ -3,13 +3,13 @@ package de.tobi1craft.rapidtrack;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import de.tobi1craft.rapidtrack.Destionations.Destination;
-import de.tobi1craft.rapidtrack.Enums.Screens;
-import de.tobi1craft.rapidtrack.Menus.MainMenu;
-import de.tobi1craft.rapidtrack.Menus.Menu;
-import de.tobi1craft.rapidtrack.Menus.StartupMenu;
+import de.tobi1craft.rapidtrack.destinations.Destination;
+import de.tobi1craft.rapidtrack.enums.Screens;
+import de.tobi1craft.rapidtrack.menus.MainMenu;
+import de.tobi1craft.rapidtrack.menus.Menu;
+import de.tobi1craft.rapidtrack.menus.StartupMenu;
+import de.tobi1craft.rapidtrack.util.ForceAssetManager;
 
 import java.util.HashMap;
 
@@ -22,7 +22,7 @@ public class RapidTrack extends ApplicationAdapter {
     private final HashMap<Screens, Menu> menus = new HashMap<>();
     private MusicManager musicManager;
     private Preferences settings;
-    private AssetManager assets;
+    private ForceAssetManager assets;
     private Stage stage;
     private Screens screen;
     private Destination destination;
@@ -31,7 +31,7 @@ public class RapidTrack extends ApplicationAdapter {
         return instance;
     }
 
-    public AssetManager getAssets() {
+    public ForceAssetManager getAssets() {
         return assets;
     }
 
@@ -51,7 +51,7 @@ public class RapidTrack extends ApplicationAdapter {
     public void create() {
         instance = this;
         settings = Gdx.app.getPreferences("settings");
-        assets = new AssetManager();
+        assets = new ForceAssetManager();
         musicManager = new MusicManager(this, assets, 0.02f);
 
         setScreen(Screens.STARTUP);
@@ -61,7 +61,7 @@ public class RapidTrack extends ApplicationAdapter {
         return switch (screen) {
             case STARTUP -> new StartupMenu();
             case MAIN_MENU -> new MainMenu();
-            //TODO
+            //TODO all Menus
             default -> null;
         };
     }
@@ -87,7 +87,7 @@ public class RapidTrack extends ApplicationAdapter {
 
     @Override
     public void resize(int width, int height) {
-        if(stage != null) stage.getViewport().update(width, height, true);
+        if (stage != null) stage.getViewport().update(width, height, true);
         if (menus.get(screen) != null) menus.get(screen).resize(width, height);
     }
 
