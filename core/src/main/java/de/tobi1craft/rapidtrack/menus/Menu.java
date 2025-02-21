@@ -2,12 +2,12 @@ package de.tobi1craft.rapidtrack.menus;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import de.tobi1craft.rapidtrack.RapidTrack;
-import de.tobi1craft.rapidtrack.util.ForceAssetManager;
+import de.tobi1craft.rapidtrack.util.RTAssetManager;
 
 import java.util.function.BiConsumer;
 
 public abstract class Menu {
-    protected final ForceAssetManager assets = RapidTrack.getInstance().getAssets();
+    protected final RTAssetManager assets = RapidTrack.getInstance().getAssets();
     protected Stage stage;
     protected BiConsumer<Integer, Integer> resize;
 
@@ -24,6 +24,6 @@ public abstract class Menu {
     }
 
     public void dispose() {
-        stage.dispose();
+        if(stage != null) stage.dispose();
     }
 }

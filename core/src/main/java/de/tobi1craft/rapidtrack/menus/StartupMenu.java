@@ -16,12 +16,9 @@ public class StartupMenu extends Menu {
 
     @Override
     protected void load() {
-        assets.load("screens/startup.png", Texture.class);
-        assets.finishLoading();
-
         stage = new Stage(new ScreenViewport(), ResourceManager.getInstance().getBatch());
 
-        Image background = new Image(assets.get("screens/startup.png", Texture.class));
+        Image background = new Image(assets.loadAndGet("screens/startup_temp.png", Texture.class));
         stage.addActor(background);
 
         Table table = new Table();
@@ -46,5 +43,6 @@ public class StartupMenu extends Menu {
                 }
             });
         };
+        assets.load("screens/main_temp.jpg", Texture.class);
     }
 }

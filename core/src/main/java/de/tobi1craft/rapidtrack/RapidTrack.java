@@ -9,7 +9,7 @@ import de.tobi1craft.rapidtrack.enums.Screens;
 import de.tobi1craft.rapidtrack.menus.MainMenu;
 import de.tobi1craft.rapidtrack.menus.Menu;
 import de.tobi1craft.rapidtrack.menus.StartupMenu;
-import de.tobi1craft.rapidtrack.util.ForceAssetManager;
+import de.tobi1craft.rapidtrack.util.RTAssetManager;
 
 import java.util.HashMap;
 
@@ -22,7 +22,7 @@ public class RapidTrack extends ApplicationAdapter {
     private final HashMap<Screens, Menu> menus = new HashMap<>();
     private MusicManager musicManager;
     private Preferences settings;
-    private ForceAssetManager assets;
+    private RTAssetManager assets;
     private Stage stage;
     private Screens screen;
     private Destination destination;
@@ -31,7 +31,7 @@ public class RapidTrack extends ApplicationAdapter {
         return instance;
     }
 
-    public ForceAssetManager getAssets() {
+    public RTAssetManager getAssets() {
         return assets;
     }
 
@@ -51,7 +51,7 @@ public class RapidTrack extends ApplicationAdapter {
     public void create() {
         instance = this;
         settings = Gdx.app.getPreferences("settings");
-        assets = new ForceAssetManager();
+        assets = new RTAssetManager();
         musicManager = new MusicManager(this, assets, 0.02f);
 
         setScreen(Screens.STARTUP);
