@@ -104,7 +104,6 @@ public class RapidTrack extends ApplicationAdapter {
     @Override
     public void dispose() {
         ResourceManager.getInstance().dispose();
-        stage.dispose();
         assets.dispose();
         for (Menu menu : menus.values()) if (menu != null) menu.dispose();
     }
