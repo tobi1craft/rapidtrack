@@ -1,11 +1,14 @@
 package de.tobi1craft.rapidtrack;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.I18NBundle;
 import de.tobi1craft.rapidtrack.destinations.Destination;
 import de.tobi1craft.rapidtrack.enums.Screens;
+import de.tobi1craft.rapidtrack.menus.GameOverlay;
 import de.tobi1craft.rapidtrack.menus.MainMenu;
 import de.tobi1craft.rapidtrack.menus.Menu;
 import de.tobi1craft.rapidtrack.menus.StartupMenu;
@@ -40,6 +43,14 @@ public class RapidTrack extends ApplicationAdapter {
     }
 
     public void setScreen(Screens screen) {
+        switch (screen) {
+            //case GAME -> TODO: Unload main menu background
+            //case MAIN_MENU bzw. LOADING -> TODO: Load main menu bg
+            case MAIN_MENU -> {
+                if (this.screen == Screens.STARTUP && assets.isLoaded("screens/startup.png"))
+                    assets.unload("screens/startup.png");
+            }
+        }
         musicManager.setScreen(screen);
         if (menus.get(screen) == null) menus.put(screen, getMenu(screen));
         this.stage = menus.get(screen).getStage();
@@ -49,10 +60,11 @@ public class RapidTrack extends ApplicationAdapter {
 
     @Override
     public void create() {
+        Gdx.app.setLogLevel(Application.LOG_DEBUG); //TODO: Production
         instance = this;
         settings = Gdx.app.getPreferences("settings");
         assets = new RTAssetManager();
-        musicManager = new MusicManager(this, assets, 0.02f);
+        musicManager = new MusicManager(assets, 0.02f);
 
         setScreen(Screens.STARTUP);
     }
@@ -61,6 +73,7 @@ public class RapidTrack extends ApplicationAdapter {
         return switch (screen) {
             case STARTUP -> new StartupMenu();
             case MAIN_MENU -> new MainMenu();
+            case GAME -> new GameOverlay();
             //TODO all Menus
             default -> null;
         };
@@ -70,18 +83,24 @@ public class RapidTrack extends ApplicationAdapter {
     public void render() {
         //ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
+        if (stage != null) {
+            stage.act();
+            stage.draw();
+        }
+
+        if (assets.isFinished()) return;
+
         if (assets.update(1000 / settings.getInteger("fps", 60))) {
+            if (screen == Screens.STARTUP) {
+                Gdx.app.debug(this.getClass().getName(), "startup loaded");
+                UI.lang = assets.get("i18n/messages", I18NBundle.class);
+            }
 
 
         } else if (screen == Screens.STARTUP) {
 
         } else {
             setScreen(Screens.LOADING);
-        }
-
-        if (stage != null) {
-            stage.act();
-            stage.draw();
         }
     }
 
@@ -106,10 +125,5 @@ public class RapidTrack extends ApplicationAdapter {
         ResourceManager.getInstance().dispose();
         assets.dispose();
         for (Menu menu : menus.values()) if (menu != null) menu.dispose();
-    }
-
-    public void start() {
-        setScreen(Screens.MAIN_MENU);
-        if (assets.isLoaded("screens/startup.png")) assets.unload("screens/startup.png");
     }
 }

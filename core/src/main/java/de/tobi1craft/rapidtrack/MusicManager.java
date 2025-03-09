@@ -5,7 +5,6 @@ import de.tobi1craft.rapidtrack.enums.Screens;
 import de.tobi1craft.rapidtrack.util.RTAssetManager;
 
 public class MusicManager {
-    private final RapidTrack rapidTrack;
     private final RTAssetManager assets;
     private final String[] mainMusic = {
         "start.mp3",
@@ -16,8 +15,7 @@ public class MusicManager {
     private Music music;
     private float volume;
 
-    public MusicManager(RapidTrack instance, RTAssetManager assetManager, float volume) {
-        rapidTrack = instance;
+    public MusicManager(RTAssetManager assetManager, float volume) {
         assets = assetManager;
         this.volume = volume;
         if (volume != 0) {
@@ -28,7 +26,7 @@ public class MusicManager {
     public void setScreen(Screens screen) {
         switch (screen) {
             case MAIN_MENU, SETTINGS -> {
-                Screens s = rapidTrack.getScreen();
+                Screens s = RapidTrack.getInstance().getScreen();
                 if (s == Screens.MAIN_MENU || s == Screens.SETTINGS) break;
                 mainMenu(true);
             }
@@ -47,7 +45,7 @@ public class MusicManager {
     public void setVolume(float volume) {
         if (volume == this.volume) return;
         if (this.volume == 0) {
-            switch (rapidTrack.getScreen()) {
+            switch (RapidTrack.getInstance().getScreen()) {
                 case MAIN_MENU, SETTINGS -> mainMenu(false);
                 //TODO: start music for other screens
             }
@@ -65,7 +63,7 @@ public class MusicManager {
         assets.load("music/main/" + mainMusic[0], Music.class);
         music.setOnCompletionListener(completedMusic -> {
             assets.unload("music/startup.wav");
-            rapidTrack.start();
+            RapidTrack.getInstance().setScreen(Screens.MAIN_MENU);
         });
     }
 
@@ -84,7 +82,7 @@ public class MusicManager {
 
         music.setOnCompletionListener(completedMusic -> {
             assets.unload(old);
-            if (rapidTrack.getScreen() == Screens.MAIN_MENU) mainMenu(false);
+            if (RapidTrack.getInstance().getScreen() == Screens.MAIN_MENU) mainMenu(false);
         });
     }
 }
