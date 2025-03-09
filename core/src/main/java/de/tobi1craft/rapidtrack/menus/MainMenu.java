@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.tobi1craft.rapidtrack.RapidTrack;
 import de.tobi1craft.rapidtrack.ResourceManager;
 import de.tobi1craft.rapidtrack.UI;
+import de.tobi1craft.rapidtrack.enums.Screens;
 
 public class MainMenu extends Menu {
 
@@ -32,7 +33,7 @@ public class MainMenu extends Menu {
 
             table.clearChildren();
 
-            TextButton button = UI.getTextButton("Start", height * 0.15f);
+            TextButton button = UI.getTextButton(height * 0.15f, "play");
             table.add(button).expandX();
 
             table.add().expandX();
@@ -41,7 +42,7 @@ public class MainMenu extends Menu {
             // start the game when the button is clicked
             button.addListener(new ChangeListener() {
                 public void changed(ChangeEvent event, Actor actor) {
-
+                    RapidTrack.getInstance().setScreen(Screens.GAME);
                 }
             });
         };

@@ -6,11 +6,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.utils.I18NBundle;
 
 import java.util.HashMap;
 
 public class UI {
     private static final HashMap<Integer, BitmapFont> fonts = new HashMap<>();
+    public static I18NBundle lang;
 
     private UI() {
     }
@@ -31,11 +33,19 @@ public class UI {
         return font;
     }
 
-    public static TextButton getTextButton(String text, float height) {
-        return getTextButton(text, height, Color.WHITE);
+    public static TextButton getLiteralTextButton(float height, String text) {
+        return getLiteralTextButton(height, text, Color.WHITE);
     }
 
-    public static TextButton getTextButton(String text, float height, Color color) {
+    public static TextButton getTextButton(float height, String text, Object... formats) {
+        return getTextButton(height, text, Color.WHITE, formats);
+    }
+
+    public static TextButton getTextButton(float height, String text, Color color, Object... formats) {
+        return getLiteralTextButton(height, lang.format(text, formats), color);
+    }
+
+    public static TextButton getLiteralTextButton(float height, String text, Color color) {
         TextButton.TextButtonStyle style = ResourceManager.getInstance().getSkin().get(TextButton.TextButtonStyle.class);
         height = Math.max(height, style.up.getMinHeight());
         style.font = getFont((int) (height / 1.618f), color);
