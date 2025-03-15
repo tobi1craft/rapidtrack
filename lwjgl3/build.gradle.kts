@@ -6,7 +6,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("io.github.fourlastor:construo:1.5.1")
+        classpath("io.github.fourlastor:construo:1.7.1")
         if (property("enableGraalNative") == "true") {
             classpath("org.graalvm.buildtools.native:org.graalvm.buildtools.native.gradle.plugin:0.10.5")
         }
@@ -15,7 +15,7 @@ buildscript {
 
 plugins {
     application
-    id("io.github.fourlastor.construo") version "1.5.1"
+    id("io.github.fourlastor.construo") version "1.7.1"
     id("org.graalvm.buildtools.native") version "0.10.5"
 }
 
@@ -27,13 +27,13 @@ application {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_23
+    targetCompatibility = JavaVersion.VERSION_23
 }
 
 if (JavaVersion.current().isJava9Compatible) {
     tasks.withType<JavaCompile> {
-        options.release.set(21)
+        options.release.set(23)
     }
 }
 
@@ -89,26 +89,30 @@ construo {
         create<Target.Linux>("linuxX64") {
             architecture.set(Target.Architecture.X86_64)
             //jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jdk_x64_linux_hotspot_17.0.12_7.tar.gz")
-            jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_x64_linux_hotspot_23.0.1_11.tar.gz")
+            //jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_x64_linux_hotspot_23.0.1_11.tar.gz")
+            jdkUrl.set("https://download.oracle.com/java/23/latest/jdk-23_linux-x64_bin.tar.gz");
         }
         create<Target.MacOs>("macM1") {
             architecture.set(Target.Architecture.AARCH64)
             //jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jdk_aarch64_mac_hotspot_17.0.12_7.tar.gz")
-            jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_aarch64_mac_hotspot_23.0.1_11.tar.gz")
+            //jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_aarch64_mac_hotspot_23.0.1_11.tar.gz")
+            jdkUrl.set("https://download.oracle.com/java/23/latest/jdk-23_macos-aarch64_bin.tar.gz")
             identifier.set("de.tobi1craft.rapidtrack.${project.extra["appName"] as String}")
             macIcon.set(project.file("icons/logo.icns"))
         }
         create<Target.MacOs>("macX64") {
             architecture.set(Target.Architecture.X86_64)
             //jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jdk_x64_mac_hotspot_17.0.12_7.tar.gz")
-            jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_x64_mac_hotspot_23.0.1_11.tar.gz")
+            //jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_x64_mac_hotspot_23.0.1_11.tar.gz")
+            jdkUrl.set("https://download.oracle.com/java/23/latest/jdk-23_macos-x64_bin.tar.gz")
             identifier.set("de.tobi1craft.rapidtrack.${project.extra["appName"] as String}")
             macIcon.set(project.file("icons/logo.icns"))
         }
         create<Target.Windows>("winX64") {
             architecture.set(Target.Architecture.X86_64)
             //jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jdk_x64_windows_hotspot_17.0.12_7.zip")
-            jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_x64_windows_hotspot_23.0.1_11.zip")
+            //jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_x64_windows_hotspot_23.0.1_11.zip")
+            jdkUrl.set("https://download.oracle.com/java/23/latest/jdk-23_windows-x64_bin.zip")
         }
     }
 }

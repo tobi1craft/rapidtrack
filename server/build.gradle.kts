@@ -3,13 +3,13 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_23
+    targetCompatibility = JavaVersion.VERSION_23
 }
 
 if (JavaVersion.current().isJava9Compatible) {
     tasks.withType<JavaCompile> {
-        options.release.set(21)
+        options.release.set(23)
     }
 }
 

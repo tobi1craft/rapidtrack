@@ -33,7 +33,7 @@ allprojects {
 
 configure(subprojects) {
     apply(plugin = "java-library")
-    java.sourceCompatibility = JavaVersion.VERSION_21
+    java.sourceCompatibility = JavaVersion.VERSION_23
 
     // From https://lyze.dev/2021/04/29/libGDX-Internal-Assets-List/
     // The article can be helpful when using assets.txt in your project.
