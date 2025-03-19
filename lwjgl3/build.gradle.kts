@@ -1,5 +1,4 @@
 import io.github.fourlastor.construo.Target
-import java.util.*
 
 buildscript {
     repositories {
@@ -19,22 +18,11 @@ plugins {
     id("org.graalvm.buildtools.native") version "0.10.5"
 }
 
-sourceSets["main"].resources.srcDirs.plusAssign(rootProject.file("assets"))
+//sourceSets["main"].resources.srcDirs.plusAssign(rootProject.file("assets"))
 
 val mainClassName = "de.tobi1craft.rapidtrack.lwjgl3.Lwjgl3Launcher"
 application {
     mainClass.set(mainClassName)
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_23
-    targetCompatibility = JavaVersion.VERSION_23
-}
-
-if (JavaVersion.current().isJava9Compatible) {
-    tasks.withType<JavaCompile> {
-        options.release.set(23)
-    }
 }
 
 dependencies {
@@ -51,22 +39,17 @@ dependencies {
     }
 }
 
-val os = System.getProperty("os.name").lowercase(Locale.getDefault())
-
 tasks.named<JavaExec>("run") {
     outputs.upToDateWhen { false }
-    workingDir = rootProject.file("assets")
+    // workingDir = rootProject.file("assets")
     isIgnoreExitValue = true
-    if (os.contains("mac")) {
-        jvmArgs!!.add("-XstartOnFirstThread")
-    }
 }
 
 tasks.named<Jar>("jar") {
-    archiveFileName.set("${project.extra["humanName"] as String}-${project.property("projectVersion")}.jar")
+    archiveFileName.set("${project.parent!!.name}-${project.property("projectVersion")}.jar")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     dependsOn(configurations.runtimeClasspath)
-    from(rootProject.file("assets"))
+    //from(rootProject.file("assets"))
     from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
     exclude("META-INF/INDEX.LIST", "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
     dependencies {
@@ -81,8 +64,8 @@ tasks.named<Jar>("jar") {
 }
 
 construo {
-    name.set(project.extra["appName"] as String)
-    humanName.set(project.extra["humanName"] as String)
+    name.set(project.parent!!.name)
+    humanName.set(project.extra["displayName"] as String)
     //version.set(project.property("projectVersion"))
 
     targets {
@@ -90,14 +73,14 @@ construo {
             architecture.set(Target.Architecture.X86_64)
             //jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jdk_x64_linux_hotspot_17.0.12_7.tar.gz")
             //jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_x64_linux_hotspot_23.0.1_11.tar.gz")
-            jdkUrl.set("https://download.oracle.com/java/23/latest/jdk-23_linux-x64_bin.tar.gz");
+            jdkUrl.set("https://download.oracle.com/java/23/latest/jdk-23_linux-x64_bin.tar.gz")
         }
         create<Target.MacOs>("macM1") {
             architecture.set(Target.Architecture.AARCH64)
             //jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jdk_aarch64_mac_hotspot_17.0.12_7.tar.gz")
             //jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_aarch64_mac_hotspot_23.0.1_11.tar.gz")
             jdkUrl.set("https://download.oracle.com/java/23/latest/jdk-23_macos-aarch64_bin.tar.gz")
-            identifier.set("de.tobi1craft.rapidtrack.${project.extra["appName"] as String}")
+            identifier.set("de.tobi1craft.rapidtrack.${project.parent!!.name}")
             macIcon.set(project.file("icons/logo.icns"))
         }
         create<Target.MacOs>("macX64") {
@@ -105,7 +88,7 @@ construo {
             //jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jdk_x64_mac_hotspot_17.0.12_7.tar.gz")
             //jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_x64_mac_hotspot_23.0.1_11.tar.gz")
             jdkUrl.set("https://download.oracle.com/java/23/latest/jdk-23_macos-x64_bin.tar.gz")
-            identifier.set("de.tobi1craft.rapidtrack.${project.extra["appName"] as String}")
+            identifier.set("de.tobi1craft.rapidtrack.${project.parent!!.name}")
             macIcon.set(project.file("icons/logo.icns"))
         }
         create<Target.Windows>("winX64") {
@@ -147,7 +130,7 @@ if (property("enableGraalNative") == "true") {
         graalvmNative {
             binaries {
                 named("main") {
-                    imageName.set(project.extra["appName"] as String)
+                    imageName.set(project.parent!!.name)
                     mainClass.set(mainClassName)
                     buildArgs.add("-march=compatibility")
                     jvmArgs.addAll("-Dfile.encoding=UTF8")
@@ -163,10 +146,10 @@ if (property("enableGraalNative") == "true") {
 
         tasks.named("generateResourcesConfigFile").configure {
             doFirst {
-                val assetsFolder = File("${project.rootDir}/assets/")
+                val assetsFolder = File("$rootDir/assets/")
                 val lwjgl3 = project(":lwjgl3")
                 val resFolder =
-                    File("${lwjgl3.projectDir}/src/main/resources/META-INF/native-image/${project.extra["appName"]}")
+                    File("${lwjgl3.projectDir}/src/main/resources/META-INF/native-image/${project.parent!!.name}")
                 resFolder.mkdirs()
                 val resFile = File(resFolder, "resource-config.json")
                 resFile.delete()

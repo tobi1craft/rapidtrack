@@ -2,17 +2,6 @@ plugins {
     application
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_23
-    targetCompatibility = JavaVersion.VERSION_23
-}
-
-if (JavaVersion.current().isJava9Compatible) {
-    tasks.withType<JavaCompile> {
-        options.release.set(23)
-    }
-}
-
 val mainClassName = "de.tobi1craft.rapidtrack.server.ServerLauncher"
 
 application {
@@ -28,7 +17,7 @@ tasks.jar {
     // get the appName from the root project!
 
 
-    archiveBaseName.set(project.extra["appName"] as String)
+    archiveBaseName.set(project.parent!!.name)
 
     // the duplicatesStrategy matters starting in Gradle 7.0; this setting works.
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

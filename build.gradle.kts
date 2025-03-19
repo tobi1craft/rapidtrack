@@ -32,14 +32,69 @@ allprojects {
     }
 }
 
-configure(subprojects) {
+subprojects {
     apply(plugin = "java-library")
-    java.sourceCompatibility = JavaVersion.VERSION_23
+
+    version = project.property("projectVersion") as String
+    extra["displayName"] = "RapidTrack"
+
+    val subprojectName = name
+    val assetsSourceDirs = mutableListOf<File>()
+    val assetsTargetDir = file("src/main/assets")
+
+    when (subprojectName) {
+        "core", "lwjgl3", "teavm" -> {
+            assetsSourceDirs.add(file("$rootDir/assets/core"))
+            assetsSourceDirs.add(file("$rootDir/assets/shared"))
+        }
+        "server" -> {
+            assetsSourceDirs.add(file("$rootDir/assets/server"))
+            assetsSourceDirs.add(file("$rootDir/assets/shared"))
+        }
+        "shared" -> assetsSourceDirs.add(file("$rootDir/assets/shared"))
+        else -> println("Unknown subproject: $subprojectName")
+    }
+
+    tasks.register<Sync>("syncAssets") {
+        if(!assetsTargetDir.exists()) assetsTargetDir.mkdir()
+        into(assetsTargetDir)
+
+        assetsSourceDirs.forEach { sourceDir ->
+            if (sourceDir.exists()) {
+                from(sourceDir)
+            } else {
+                println("Source directory not found: $sourceDir for subproject: $subprojectName")
+            }
+        }
+    }
+
+    repositories {
+        mavenCentral()
+        maven(url = "https://s01.oss.sonatype.org")
+        maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
+        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        maven(url = "https://jitpack.io")
+        maven(url = "https://teavm.org/maven/repository/")
+    }
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_23
+        targetCompatibility = JavaVersion.VERSION_23
+    }
+
+    sourceSets {
+        main {
+            resources {
+                srcDirs("src/main/assets")
+            }
+        }
+    }
 
     // From https://lyze.dev/2021/04/29/libGDX-Internal-Assets-List/
     // The article can be helpful when using assets.txt in your project.
     tasks.register("generateAssetList") {
-        val assetsFolder = File("${project.rootDir}/assets/")
+        dependsOn("syncAssets")
+        val assetsFolder = file("src/main/assets/")
         val assetsFile = File(assetsFolder, "assets.txt")
 
         inputs.dir(assetsFolder)
@@ -58,27 +113,12 @@ configure(subprojects) {
     }
 
     tasks.named("processResources") {
+        dependsOn("syncAssets")
         dependsOn("generateAssetList")
     }
 
     tasks.named<JavaCompile>("compileJava") {
         options.isIncremental = true
-    }
-}
-
-subprojects {
-    version = project.property("projectVersion") as String
-    extra["appName"] = "rapidtrack"
-    extra["humanName"] = "RapidTrack"
-
-    repositories {
-        mavenCentral()
-        maven(url = "https://s01.oss.sonatype.org")
-        // You may want to remove the following line if you have errors downloading dependencies.
-        mavenLocal()
-        maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
-        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
-        maven(url = "https://jitpack.io")
-        maven(url = "https://teavm.org/maven/repository/")
+        options.encoding = "UTF-8"
     }
 }

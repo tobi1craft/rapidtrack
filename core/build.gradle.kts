@@ -1,7 +1,3 @@
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-}
-
 dependencies {
     api(project(":shared"))
     api("com.badlogicgames.gdx-controllers:gdx-controllers-core:${property("gdxControllersVersion")}")

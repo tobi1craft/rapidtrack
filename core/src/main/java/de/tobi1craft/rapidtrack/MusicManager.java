@@ -61,7 +61,7 @@ public class MusicManager {
         music.play();
 
         assets.load("music/main/" + mainMusic[0], Music.class);
-        music.setOnCompletionListener(completedMusic -> {
+        music.setOnCompletionListener(_ -> {
             assets.unload("music/startup.wav");
             RapidTrack.getInstance().setScreen(Screens.MAIN_MENU);
         });
@@ -80,7 +80,7 @@ public class MusicManager {
         current = "music/main/" + mainMusic[(int) (Math.random() * (mainMusic.length - 1)) + 1];
         assets.load(current, Music.class);
 
-        music.setOnCompletionListener(completedMusic -> {
+        music.setOnCompletionListener(_ -> {
             assets.unload(old);
             if (RapidTrack.getInstance().getScreen() == Screens.MAIN_MENU) mainMenu(false);
         });
