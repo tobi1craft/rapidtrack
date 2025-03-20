@@ -68,6 +68,10 @@ subprojects {
         }
     }
 
+    tasks.register<Delete>("deleteSyncedAssets") {
+        if(assetsTargetDir.exists()) delete(assetsTargetDir)
+    }
+
     repositories {
         mavenCentral()
         maven(url = "https://s01.oss.sonatype.org")
@@ -112,7 +116,7 @@ subprojects {
         }
     }
 
-    tasks.named("processResources") {
+    tasks.named<ProcessResources>("processResources") {
         dependsOn("syncAssets")
         dependsOn("generateAssetList")
     }
@@ -120,5 +124,9 @@ subprojects {
     tasks.named<JavaCompile>("compileJava") {
         options.isIncremental = true
         options.encoding = "UTF-8"
+    }
+
+    tasks.named<Delete>("clean") {
+        dependsOn("deleteSyncedAssets")
     }
 }
