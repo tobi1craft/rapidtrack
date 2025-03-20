@@ -2,15 +2,16 @@ package de.tobi1craft.rapidtrack;
 
 import com.badlogic.gdx.audio.Music;
 import de.tobi1craft.rapidtrack.enums.Screens;
+import de.tobi1craft.rapidtrack.util.AssetsHelper;
 import de.tobi1craft.rapidtrack.util.RTAssetManager;
+
+import java.util.List;
 
 public class MusicManager {
     private final RTAssetManager assets;
-    private final String[] mainMusic = {
-        "start.mp3",
-        "menu_short.wav",
-        "menu_ultrashort.wav"
-    };
+    private final String startupMusic = AssetsHelper.getFilesInDirectory("music", ".*startup.*\\.(mp3|wav|ogg)$", null).getFirst();
+    private final String mainMusicStart = AssetsHelper.getFilesInDirectory("music/main", ".*start.*\\.(mp3|wav|ogg)$", null).getFirst();
+    private final List<String> mainMusic = AssetsHelper.getFilesInDirectory("music/main", ".*\\.(mp3|wav|ogg)$", ".*start.*");
     private String current;
     private Music music;
     private float volume;
@@ -55,14 +56,14 @@ public class MusicManager {
     }
 
     public void startup() {
-        music = assets.loadAndGet("music/startup.wav", Music.class);
+        music = assets.loadAndGet(startupMusic, Music.class);
         music.setVolume(volume);
         music.setLooping(false);
         music.play();
 
-        assets.load("music/main/" + mainMusic[0], Music.class);
+        assets.load(mainMusicStart, Music.class);
         music.setOnCompletionListener(_ -> {
-            assets.unload("music/startup.wav");
+            assets.unload(startupMusic);
             RapidTrack.getInstance().setScreen(Screens.MAIN_MENU);
         });
     }
@@ -70,14 +71,14 @@ public class MusicManager {
     private void mainMenu(boolean start) {
         if (music.isPlaying()) music.stop();
         if (volume == 0) return;
-        if (start) current = "music/main/" + mainMusic[0];
+        if (start) current = mainMusicStart;
         music = assets.get(current, Music.class);
         music.setVolume(volume);
         music.setLooping(false);
         music.play();
 
         String old = current;
-        current = "music/main/" + mainMusic[(int) (Math.random() * (mainMusic.length - 1)) + 1];
+        current = mainMusic.get((int) (Math.random() * mainMusic.size()));
         assets.load(current, Music.class);
 
         music.setOnCompletionListener(_ -> {
