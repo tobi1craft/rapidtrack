@@ -1,6 +1,7 @@
 package de.tobi1craft.rapidtrack;
 
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.math.MathUtils;
 import de.tobi1craft.rapidtrack.enums.Screens;
 import de.tobi1craft.rapidtrack.util.AssetsHelper;
 import de.tobi1craft.rapidtrack.util.RTAssetManager;
@@ -78,7 +79,7 @@ public class MusicManager {
         music.play();
 
         String old = current;
-        current = mainMusic.get((int) (Math.random() * mainMusic.size()));
+        current = mainMusic.get(MathUtils.random(mainMusic.size() - 1));
         assets.load(current, Music.class);
 
         music.setOnCompletionListener(_ -> {
