@@ -43,7 +43,7 @@ jobs:
           # rclone copy will overwrite the destination file if it exists
           # Use the path one level up for the source file
           archive_path="../${{ steps.archive.outputs.archive_name }}"
-          rclone copy "${archive_path}" onedrive:github/ -P --config /dev/null
+          rclone copy "${archive_path}" onedrive:github -P --config /dev/null
           # The --config /dev/null ensures rclone doesn't try to read a local config file
           # The -P flag shows progress
 
