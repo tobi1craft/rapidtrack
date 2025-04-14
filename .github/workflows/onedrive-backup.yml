@@ -24,7 +24,8 @@ jobs:
         run: |
           archive_name="${{ github.event.repository.name }}.tar.gz"
           # Create a gzipped tar archive of the current directory contents, including .git
-          tar -czf "$archive_name" .
+          # Exclude the archive file itself from being included in the archive
+          tar --exclude="$archive_name" -czf "$archive_name" .
           echo "archive_name=$archive_name" >> $GITHUB_OUTPUT
 
       - name: Upload Archive to OneDrive using rclone
