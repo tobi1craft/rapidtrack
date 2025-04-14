@@ -21,6 +21,8 @@ import java.util.HashMap;
  */
 public class RapidTrack extends ApplicationAdapter {
 
+    private Test3D test;
+
     private static RapidTrack instance;
     private final HashMap<Screens, Menu> menus = new HashMap<>();
     private MusicManager musicManager;
@@ -67,6 +69,9 @@ public class RapidTrack extends ApplicationAdapter {
         musicManager = new MusicManager(assets, 0.02f);
 
         setScreen(Screens.STARTUP);
+
+        test = new Test3D();
+        test.create();
     }
 
     private Menu getMenu(Screens screen) {
@@ -82,6 +87,8 @@ public class RapidTrack extends ApplicationAdapter {
     @Override
     public void render() {
         //ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+
+        test.render();
 
         if (stage != null) {
             stage.act();
@@ -108,6 +115,8 @@ public class RapidTrack extends ApplicationAdapter {
     public void resize(int width, int height) {
         if (stage != null) stage.getViewport().update(width, height, true);
         if (menus.get(screen) != null) menus.get(screen).resize(width, height);
+
+        test.resize(width, height);
     }
 
     @Override
@@ -125,5 +134,7 @@ public class RapidTrack extends ApplicationAdapter {
         ResourceManager.getInstance().dispose();
         assets.dispose();
         for (Menu menu : menus.values()) if (menu != null) menu.dispose();
+
+        test.dispose();
     }
 }
