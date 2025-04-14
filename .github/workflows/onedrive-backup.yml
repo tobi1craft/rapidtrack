@@ -22,11 +22,13 @@ jobs:
       - name: Create Repository Archive
         id: archive
         run: |
-          archive_name="${{ github.event.repository.name }}.tar.gz"
           # Create a gzipped tar archive of the current directory contents, including .git
-          # Exclude the archive file itself from being included in the archive
-          tar --exclude="$archive_name" -czf "$archive_name" .
-          echo "archive_name=$archive_name" >> $GITHUB_OUTPUT
+          archive_name="${{ github.event.repository.name }}.tar.gz"
+          archive_path="../${archive_name}" # Define path one level up
+          # Create archive at archive_path, archiving the current directory '.'
+          tar -czf "${archive_path}" .
+          # Output just the base name for reference in other steps
+          echo "archive_name=${archive_name}" >> $GITHUB_OUTPUT
 
       - name: Upload Archive to OneDrive using rclone
         env:
@@ -39,9 +41,14 @@ jobs:
         run: |
           # Copy the archive file to the specified OneDrive folder
           # rclone copy will overwrite the destination file if it exists
-          rclone copy "${{ steps.archive.outputs.archive_name }}" onedrive:github/ -P --config /dev/null
+          # Use the path one level up for the source file
+          archive_path="../${{ steps.archive.outputs.archive_name }}"
+          rclone copy "${archive_path}" onedrive:github/ -P --config /dev/null
           # The --config /dev/null ensures rclone doesn't try to read a local config file
           # The -P flag shows progress
 
       - name: Clean up local archive
-        run: rm "${{ steps.archive.outputs.archive_name }}"
+        run: |
+          # Use the path one level up for the file to remove
+          archive_path="../${{ steps.archive.outputs.archive_name }}"
+          rm "${archive_path}"
