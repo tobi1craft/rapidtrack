@@ -73,13 +73,13 @@ construo {
             architecture.set(Target.Architecture.X86_64)
             //jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jdk_x64_linux_hotspot_17.0.12_7.tar.gz")
             //jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_x64_linux_hotspot_23.0.1_11.tar.gz")
-            jdkUrl.set("https://download.oracle.com/java/23/latest/jdk-23_linux-x64_bin.tar.gz")
+            jdkUrl.set("https://download.oracle.com/java/24/latest/jdk-24_linux-x64_bin.tar.gz")
         }
         create<Target.MacOs>("macM1") {
             architecture.set(Target.Architecture.AARCH64)
             //jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jdk_aarch64_mac_hotspot_17.0.12_7.tar.gz")
             //jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_aarch64_mac_hotspot_23.0.1_11.tar.gz")
-            jdkUrl.set("https://download.oracle.com/java/23/latest/jdk-23_macos-aarch64_bin.tar.gz")
+            jdkUrl.set("https://download.oracle.com/java/24/latest/jdk-24_macos-aarch64_bin.tar.gz")
             identifier.set("de.tobi1craft.rapidtrack.${project.parent!!.name}")
             macIcon.set(project.file("icons/logo.icns"))
         }
@@ -87,7 +87,7 @@ construo {
             architecture.set(Target.Architecture.X86_64)
             //jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jdk_x64_mac_hotspot_17.0.12_7.tar.gz")
             //jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_x64_mac_hotspot_23.0.1_11.tar.gz")
-            jdkUrl.set("https://download.oracle.com/java/23/latest/jdk-23_macos-x64_bin.tar.gz")
+            jdkUrl.set("https://download.oracle.com/java/24/latest/jdk-24_macos-x64_bin.tar.gz")
             identifier.set("de.tobi1craft.rapidtrack.${project.parent!!.name}")
             macIcon.set(project.file("icons/logo.icns"))
         }
@@ -95,7 +95,7 @@ construo {
             architecture.set(Target.Architecture.X86_64)
             //jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jdk_x64_windows_hotspot_17.0.12_7.zip")
             //jdkUrl.set("https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_x64_windows_hotspot_23.0.1_11.zip")
-            jdkUrl.set("https://download.oracle.com/java/23/latest/jdk-23_windows-x64_bin.zip")
+            jdkUrl.set("https://download.oracle.com/java/24/latest/jdk-24_windows-x64_bin.zip")
         }
     }
 }
