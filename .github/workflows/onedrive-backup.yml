@@ -1,0 +1,54 @@
+name: Backup to OneDrive
+
+on:
+  push:
+    branches:
+      - main # Or your default branch name if different
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history is necessary if you include .git
+
+      - name: Install rclone
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rclone
+
+      - name: Create Repository Archive
+        id: archive
+        run: |
+          # Create a gzipped tar archive of the current directory contents, including .git
+          archive_name="${{ github.event.repository.name }}.tar.gz"
+          archive_path="../${archive_name}" # Define path one level up
+          # Create archive at archive_path, archiving the current directory '.'
+          tar -czf "${archive_path}" .
+          # Output just the base name for reference in other steps
+          echo "archive_name=${archive_name}" >> $GITHUB_OUTPUT
+
+      - name: Upload Archive to OneDrive using rclone
+        env:
+          # Define the rclone remote configuration using secrets
+          # The remote name 'onedrive' is derived from 'RCLONE_CONFIG_ONEDRIVE_*'
+          RCLONE_CONFIG_ONEDRIVE_TYPE: onedrive
+          RCLONE_CONFIG_ONEDRIVE_TOKEN: ${{ secrets.RCLONE_ONEDRIVE_TOKEN }}
+          RCLONE_CONFIG_ONEDRIVE_DRIVE_ID: a82d347ea986da34
+          RCLONE_CONFIG_ONEDRIVE_DRIVE_TYPE: personal
+        run: |
+          # Copy the archive file to the specified OneDrive folder
+          # rclone copy will overwrite the destination file if it exists
+          # Use the path one level up for the source file
+          archive_path="../${{ steps.archive.outputs.archive_name }}"
+          rclone copy "${archive_path}" onedrive:github -P --config /dev/null
+          # The --config /dev/null ensures rclone doesn't try to read a local config file
+          # The -P flag shows progress
+
+      - name: Clean up local archive
+        run: |
+          # Use the path one level up for the file to remove
+          archive_path="../${{ steps.archive.outputs.archive_name }}"
+          rm "${archive_path}"
