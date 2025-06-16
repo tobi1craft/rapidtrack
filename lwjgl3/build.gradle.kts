@@ -7,7 +7,7 @@ buildscript {
     dependencies {
         classpath("io.github.fourlastor:construo:1.7.1")
         if (property("enableGraalNative") == "true") {
-            classpath("org.graalvm.buildtools.native:org.graalvm.buildtools.native.gradle.plugin:0.10.5")
+            classpath("org.graalvm.buildtools.native:org.graalvm.buildtools.native.gradle.plugin:0.10.6")
         }
     }
 }
@@ -15,7 +15,7 @@ buildscript {
 plugins {
     application
     id("io.github.fourlastor.construo") version "1.7.1"
-    id("org.graalvm.buildtools.native") version "0.10.5"
+    id("org.graalvm.buildtools.native") version "0.10.6"
 }
 
 //sourceSets["main"].resources.srcDirs.plusAssign(rootProject.file("assets"))
