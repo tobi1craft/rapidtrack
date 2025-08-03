@@ -1,7 +1,7 @@
 package de.tobi1craft.rapidtrack.teavm;
 
-import com.github.xpenatan.gdx.backends.teavm.TeaApplicationConfiguration;
 import com.github.xpenatan.gdx.backends.teavm.TeaApplication;
+import com.github.xpenatan.gdx.backends.teavm.TeaApplicationConfiguration;
 import de.tobi1craft.rapidtrack.RapidTrack;
 
 /**
@@ -10,22 +10,21 @@ import de.tobi1craft.rapidtrack.RapidTrack;
 public class TeaVMLauncher {
     public static void main(String[] args) {
         TeaApplicationConfiguration config = new TeaApplicationConfiguration("canvas");
-        //// If width and height are each greater than 0, then the app will use a fixed size.
+        //? If width and height are each greater than 0, then the app will use a fixed size.
         //config.width = 640;
         //config.height = 480;
-        //// If width and height are both 0, then the app will use all available space.
+        //? If width and height are both 0, then the app will use all available space.
         //config.width = 0;
         //config.height = 0;
-        //// If width and height are both -1, then the app will fill the canvas size.
+        //? If width and height are both -1, then the app will fill the canvas size.
         config.width = -1;
         config.height = -1;
 
         config.showDownloadLogs = true;
         config.preloadAssets = true;
+        config.useGL30 = true;
 
-        config.preloadListener = assetLoader -> {
-            assetLoader.loadScript("freetype.js");
-        };
+        config.preloadListener = assetLoader -> assetLoader.loadScript("freetype.js");
 
         new TeaApplication(new RapidTrack(), config);
     }

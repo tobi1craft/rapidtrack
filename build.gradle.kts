@@ -3,22 +3,6 @@ plugins {
     java
 }
 
-buildscript {
-    repositories {
-        mavenCentral()
-        maven(url = "https://s01.oss.sonatype.org")
-        gradlePluginPortal()
-        mavenLocal()
-        google()
-        maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
-        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
-        maven(url = "https://jitpack.io")
-    }
-    dependencies {
-
-    }
-}
-
 allprojects {
     apply(plugin = "idea")
 
@@ -74,11 +58,7 @@ subprojects {
 
     repositories {
         mavenCentral()
-        maven(url = "https://s01.oss.sonatype.org")
-        maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
-        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
         maven(url = "https://jitpack.io")
-        maven(url = "https://teavm.org/maven/repository/")
     }
 
     java {

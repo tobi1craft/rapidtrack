@@ -13,11 +13,10 @@ val mainClassName = "de.tobi1craft.rapidtrack.teavm.TeaVMBuilder"
 
 dependencies {
     implementation("com.badlogicgames.gdx:gdx:${property("gdxVersion")}") //??? https://github.com/xpenatan/gdx-teavm/blob/master/examples/core/teavm/build.gradle
-
     implementation("com.github.xpenatan.gdx-teavm:backend-teavm:${property("gdxTeaVMVersion")}")
     implementation("com.github.xpenatan.gdx-teavm:gdx-freetype-teavm:${property("gdxTeaVMVersion")}")
     implementation("com.github.xpenatan.gdx-teavm:gdx-bullet-teavm:${property("gdxBulletTeaVMVersion")}")
-    implementation(project(":core")) 
+    implementation(project(":core"))
 }
 
 tasks.register<JavaExec>("buildJavaScript") {
