@@ -17,13 +17,7 @@ dependencies {
     implementation("com.github.xpenatan.gdx-teavm:backend-teavm:${property("gdxTeaVMVersion")}")
     implementation("com.github.xpenatan.gdx-teavm:gdx-freetype-teavm:${property("gdxTeaVMVersion")}")
     implementation("com.github.xpenatan.gdx-teavm:gdx-bullet-teavm:${property("gdxBulletTeaVMVersion")}")
-//    implementation("org.teavm:teavm-classlib:${property("teaVMVersion")}")
-//    implementation("org.teavm:teavm-core:${property("teaVMVersion")}")
-//    implementation("org.teavm:teavm-jso-apis:${property("teaVMVersion")}")
-//    implementation("org.teavm:teavm-jso-impl:${property("teaVMVersion")}")
-//    implementation("org.teavm:teavm-jso:${property("teaVMVersion")}")
-//    implementation("org.teavm:teavm-tooling:${property("teaVMVersion")}")
-    implementation(project(":core"))
+    implementation(project(":core")) 
 }
 
 tasks.register<JavaExec>("buildJavaScript") {
