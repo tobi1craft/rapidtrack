@@ -1,34 +1,26 @@
 package de.tobi1craft.rapidtrack;
 
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.I18NBundle;
+import com.badlogic.gdx.utils.ScreenUtils;
 import de.tobi1craft.rapidtrack.destinations.Destination;
 import de.tobi1craft.rapidtrack.enums.Screens;
-import de.tobi1craft.rapidtrack.menus.GameOverlay;
 import de.tobi1craft.rapidtrack.menus.MainMenu;
-import de.tobi1craft.rapidtrack.menus.Menu;
 import de.tobi1craft.rapidtrack.menus.StartupMenu;
+import de.tobi1craft.rapidtrack.menus.Test3D;
 import de.tobi1craft.rapidtrack.util.RTAssetManager;
 
 import java.util.HashMap;
 
-/**
- * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
- */
-public class RapidTrack extends ApplicationAdapter {
-
-    private Test3D test;
+public class RapidTrack extends Game {
 
     private static RapidTrack instance;
-    private final HashMap<Screens, Menu> menus = new HashMap<>();
+    private final HashMap<Screens, Screen> menus = new HashMap<>();
+    private Test3D test;
     private MusicManager musicManager;
     private Preferences settings;
     private RTAssetManager assets;
-    private Stage stage;
     private Screens screen;
     private Destination destination;
 
@@ -40,7 +32,7 @@ public class RapidTrack extends ApplicationAdapter {
         return assets;
     }
 
-    public Screens getScreen() {
+    public Screens whichScreen() {
         return screen;
     }
 
@@ -55,9 +47,9 @@ public class RapidTrack extends ApplicationAdapter {
         }
         musicManager.setScreen(screen);
         if (menus.get(screen) == null) menus.put(screen, getMenu(screen));
-        this.stage = menus.get(screen).getStage();
-        Gdx.input.setInputProcessor(stage);
+        this.setScreen(menus.get(screen));
         this.screen = screen;
+
     }
 
     @Override
@@ -69,16 +61,13 @@ public class RapidTrack extends ApplicationAdapter {
         musicManager = new MusicManager(assets, 0.02f);
 
         setScreen(Screens.STARTUP);
-
-        test = new Test3D();
-        test.create();
     }
 
-    private Menu getMenu(Screens screen) {
+    private Screen getMenu(Screens screen) {
         return switch (screen) {
             case STARTUP -> new StartupMenu();
             case MAIN_MENU -> new MainMenu();
-            case GAME -> new GameOverlay();
+            case GAME -> new Test3D();
             //TODO all Menus
             default -> null;
         };
@@ -86,14 +75,8 @@ public class RapidTrack extends ApplicationAdapter {
 
     @Override
     public void render() {
-        //ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-
-        test.render();
-
-        if (stage != null) {
-            stage.act();
-            stage.draw();
-        }
+        ScreenUtils.clear(Color.CLEAR);
+        super.render();
 
         if (assets.isFinished()) return;
 
@@ -113,28 +96,26 @@ public class RapidTrack extends ApplicationAdapter {
 
     @Override
     public void resize(int width, int height) {
-        if (stage != null) stage.getViewport().update(width, height, true);
-        if (menus.get(screen) != null) menus.get(screen).resize(width, height);
-
-        test.resize(width, height);
+        super.resize(width, height);
     }
 
     @Override
     public void pause() {
+        super.pause();
         musicManager.pause();
     }
 
     @Override
     public void resume() {
+        super.resume();
         musicManager.resume();
     }
 
     @Override
     public void dispose() {
+        super.dispose();
         ResourceManager.getInstance().dispose();
         assets.dispose();
-        for (Menu menu : menus.values()) if (menu != null) menu.dispose();
-
-        test.dispose();
+        for (Screen menu : menus.values()) if (menu != null) menu.dispose();
     }
 }

@@ -28,7 +28,7 @@ public class MusicManager {
     public void setScreen(Screens screen) {
         switch (screen) {
             case MAIN_MENU, SETTINGS -> {
-                Screens s = RapidTrack.getInstance().getScreen();
+                Screens s = RapidTrack.getInstance().whichScreen();
                 if (s == Screens.MAIN_MENU || s == Screens.SETTINGS) break;
                 mainMenu(true);
             }
@@ -47,7 +47,7 @@ public class MusicManager {
     public void setVolume(float volume) {
         if (volume == this.volume) return;
         if (this.volume == 0) {
-            switch (RapidTrack.getInstance().getScreen()) {
+            switch (RapidTrack.getInstance().whichScreen()) {
                 case MAIN_MENU, SETTINGS -> mainMenu(false);
                 //TODO: start music for other screens
             }
@@ -84,7 +84,7 @@ public class MusicManager {
 
         music.setOnCompletionListener(_ -> {
             assets.unload(old);
-            if (RapidTrack.getInstance().getScreen() == Screens.MAIN_MENU) mainMenu(false);
+            if (RapidTrack.getInstance().whichScreen() == Screens.MAIN_MENU) mainMenu(false);
         });
     }
 }

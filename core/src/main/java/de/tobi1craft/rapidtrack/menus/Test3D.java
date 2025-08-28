@@ -1,11 +1,8 @@
-package de.tobi1craft.rapidtrack;
+package de.tobi1craft.rapidtrack.menus;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector3;
-import net.mgsx.gltf.loaders.glb.GLBLoader;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
@@ -16,7 +13,7 @@ import net.mgsx.gltf.scene3d.scene.SceneManager;
 import net.mgsx.gltf.scene3d.scene.SceneSkybox;
 import net.mgsx.gltf.scene3d.utils.IBLBuilder;
 
-public class Test3D {
+public class Test3D extends Menu {
     private SceneManager sceneManager;
     private SceneAsset sceneAsset;
     private Scene scene;
@@ -31,19 +28,26 @@ public class Test3D {
 
     private FirstPersonCameraController controller;
 
-    public void create() {
+    @Override
+    protected void load() {
+
+    }
+
+    @Override
+    public void show() {
 
         // create scene
         sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/car.gltf"));
         scene = new Scene(sceneAsset.scene);
+        // scale the scene up to keep reasonable camera near plane and avoid depth precision issues
+        //scene.modelInstance.transform.scale(100f, 100f, 100f);
         sceneManager = new SceneManager();
         sceneManager.addScene(scene);
 
-        // setup camera (The BoomBox model is very small so you may need to adapt camera settings for your scene)
+        // setup camera (use a reasonable near/far to preserve depth precision)
         camera = new PerspectiveCamera(60f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        float d = .02f;
-        camera.near = d / 1000f;
-        camera.far = 200;
+        camera.near = 0.1f;
+        camera.far = 100;
         sceneManager.setCamera(camera);
 
         // setup light
@@ -81,7 +85,8 @@ public class Test3D {
         sceneManager.updateViewport(width, height);
     }
 
-    public void render() {
+    @Override
+    public void render(float delta) {
         float deltaTime = Gdx.graphics.getDeltaTime();
         time += deltaTime;
 
@@ -101,6 +106,7 @@ public class Test3D {
         sceneManager.render();
     }
 
+    @Override
     public void dispose() {
         sceneManager.dispose();
         sceneAsset.dispose();
@@ -109,5 +115,6 @@ public class Test3D {
         specularCubemap.dispose();
         brdfLUT.dispose();
         skybox.dispose();
+        super.dispose();
     }
 }
