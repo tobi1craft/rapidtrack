@@ -6,9 +6,9 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.tobi1craft.rapidtrack.destinations.Destination;
 import de.tobi1craft.rapidtrack.enums.Screens;
-import de.tobi1craft.rapidtrack.menus.MainMenu;
-import de.tobi1craft.rapidtrack.menus.StartupMenu;
-import de.tobi1craft.rapidtrack.menus.Test3D;
+import de.tobi1craft.rapidtrack.screens.MainScreen;
+import de.tobi1craft.rapidtrack.screens.StartupScreen;
+import de.tobi1craft.rapidtrack.screens.Test3D;
 import de.tobi1craft.rapidtrack.util.RTAssetManager;
 
 import java.util.HashMap;
@@ -37,14 +37,6 @@ public class RapidTrack extends Game {
     }
 
     public void setScreen(Screens screen) {
-        switch (screen) {
-            //case GAME -> TODO: Unload main menu background
-            //case MAIN_MENU bzw. LOADING -> TODO: Load main menu bg
-            case MAIN_MENU -> {
-                if (this.screen == Screens.STARTUP && assets.isLoaded("screens/startup.png"))
-                    assets.unload("screens/startup.png");
-            }
-        }
         musicManager.setScreen(screen);
         if (menus.get(screen) == null) menus.put(screen, getMenu(screen));
         this.setScreen(menus.get(screen));
@@ -65,8 +57,8 @@ public class RapidTrack extends Game {
 
     private Screen getMenu(Screens screen) {
         return switch (screen) {
-            case STARTUP -> new StartupMenu();
-            case MAIN_MENU -> new MainMenu();
+            case STARTUP -> new StartupScreen();
+            case MAIN_MENU -> new MainScreen();
             case GAME -> new Test3D();
             //TODO all Menus
             default -> null;

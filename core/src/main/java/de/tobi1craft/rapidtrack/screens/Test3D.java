@@ -1,8 +1,10 @@
-package de.tobi1craft.rapidtrack.menus;
+package de.tobi1craft.rapidtrack.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
@@ -27,11 +29,6 @@ public class Test3D extends Menu {
     private DirectionalLightEx light;
 
     private FirstPersonCameraController controller;
-
-    @Override
-    protected void load() {
-
-    }
 
     @Override
     public void show() {
@@ -90,13 +87,13 @@ public class Test3D extends Menu {
         float deltaTime = Gdx.graphics.getDeltaTime();
         time += deltaTime;
 
-        /*
+
         // animate camera
-        camera.position.setFromSpherical(MathUtils.PI / 4, time * .3f).scl(.02f);
+        camera.position.setFromSpherical(MathUtils.PI / 4, time * .3f).scl(1);
         camera.up.set(Vector3.Y);
         camera.lookAt(Vector3.Zero);
         camera.update();
-         */
+
 
         controller.update();
 

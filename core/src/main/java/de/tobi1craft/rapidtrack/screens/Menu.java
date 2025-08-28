@@ -1,4 +1,4 @@
-package de.tobi1craft.rapidtrack.menus;
+package de.tobi1craft.rapidtrack.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -13,16 +13,12 @@ public abstract class Menu implements Screen {
     protected Stage stage;
     protected BiConsumer<Integer, Integer> resize;
 
-    protected abstract void load();
-
     public Stage getStage() {
-        if (stage == null) load();
         return stage;
     }
 
     @Override
     public void show() {
-        if (resize == null) load();
         Gdx.input.setInputProcessor(stage);
     }
 
@@ -36,7 +32,6 @@ public abstract class Menu implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        if (resize == null) load();
         if (stage != null) stage.getViewport().update(width, height, true);
         resize.accept(width, height);
     }
@@ -53,7 +48,8 @@ public abstract class Menu implements Screen {
 
     @Override
     public void hide() {
-
+        //TODO: Unload main menu background
+        //TODO: Load main menu bg
     }
 
     @Override

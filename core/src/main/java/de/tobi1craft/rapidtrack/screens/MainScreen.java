@@ -1,6 +1,5 @@
-package de.tobi1craft.rapidtrack.menus;
+package de.tobi1craft.rapidtrack.screens;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -14,10 +13,9 @@ import de.tobi1craft.rapidtrack.ResourceManager;
 import de.tobi1craft.rapidtrack.UI;
 import de.tobi1craft.rapidtrack.enums.Screens;
 
-public class MainMenu extends Menu {
+public class MainScreen extends Menu {
 
-    @Override
-    protected void load() {
+    public MainScreen() {
         stage = new Stage(new ScreenViewport(), ResourceManager.getInstance().getBatch());
 
         Image background = new Image(assets.get("screens/main_temp.jpg", Texture.class));
@@ -46,6 +44,5 @@ public class MainMenu extends Menu {
                 }
             });
         };
-        resize.accept(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 }
