@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.tobi1craft.rapidtrack.destinations.Destination;
 import de.tobi1craft.rapidtrack.enums.Screens;
+import de.tobi1craft.rapidtrack.screens.GameScreen;
 import de.tobi1craft.rapidtrack.screens.MainScreen;
 import de.tobi1craft.rapidtrack.screens.StartupScreen;
 import de.tobi1craft.rapidtrack.screens.Test3D;
@@ -59,7 +60,7 @@ public class RapidTrack extends Game {
         return switch (screen) {
             case STARTUP -> new StartupScreen();
             case MAIN_MENU -> new MainScreen();
-            case GAME -> new Test3D();
+            case GAME -> new GameScreen();
             //TODO all Menus
             default -> null;
         };
@@ -67,7 +68,7 @@ public class RapidTrack extends Game {
 
     @Override
     public void render() {
-        ScreenUtils.clear(Color.CLEAR);
+        ScreenUtils.clear(Color.CLEAR, true);
         super.render();
 
         if (assets.isFinished()) return;
