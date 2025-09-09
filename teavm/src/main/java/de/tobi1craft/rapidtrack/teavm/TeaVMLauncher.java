@@ -21,11 +21,10 @@ public class TeaVMLauncher {
         config.height = -1;
 
         config.showDownloadLogs = true;
-        config.preloadAssets = true;
         config.useGL30 = true;
 
-        config.preloadListener = assetLoader -> assetLoader.loadScript("freetype.js");
+        config.preloadListener = assetLoader -> assetLoader.loadScript("freetype.js"); //? Was in GH examples once, maybe remove
 
-        new TeaApplication(new RapidTrack(), config);
+        new TeaApplication(new RapidTrack(), config); //TODO: Audio fix available on GitHub
     }
 }
