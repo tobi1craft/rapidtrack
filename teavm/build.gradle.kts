@@ -6,9 +6,9 @@ plugins {
     id("org.teavm") version "0.12.3"
 }
 
-
 gretty {
     contextPath = "/"
+    servletContainer = "jetty11"
     extraResourceBase("build/dist/webapp")
 }
 
@@ -63,10 +63,10 @@ tasks.register<JavaExec>("core-build") {
 tasks.register("core-run-teavm") {
     group = "rapidtrack-teavm"
     description = "Run RapidTrack via TeaVM"
-    val list = listOf("core-build", "jettyRun")
+    val list = listOf("core-build", "appRun")
     dependsOn(list)
 
-    tasks.findByName("jettyRun")?.mustRunAfter("core-build")
+    tasks.findByName("appRun")?.mustRunAfter("core-build")
 }
 
 
