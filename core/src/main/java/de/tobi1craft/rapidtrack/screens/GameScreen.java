@@ -1,6 +1,7 @@
 package de.tobi1craft.rapidtrack.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -96,7 +97,6 @@ public class GameScreen extends Menu {
         sceneManager.setSkyBox(skybox);
 
 
-
         resize = (width, height) -> {
             table.clearChildren();
 
@@ -115,7 +115,6 @@ public class GameScreen extends Menu {
 
 
             sceneManager.updateViewport(width, height);
-
 
 
         };
@@ -163,6 +162,9 @@ public class GameScreen extends Menu {
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage); //TODO: Custom steering logic
+        InputMultiplexer multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(stage);
+        multiplexer.addProcessor(car);
+        Gdx.input.setInputProcessor(multiplexer);
     }
 }
