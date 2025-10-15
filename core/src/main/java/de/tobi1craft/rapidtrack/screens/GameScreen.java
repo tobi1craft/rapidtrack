@@ -138,7 +138,8 @@ public class GameScreen extends Menu {
         camera.up.set(Vector3.Y);
         Vector3 carPosition = car.getTranslation();
         Quaternion carRotation = car.getRotation();
-        Vector3 localOffset = new Vector3(0f, 0.8f, 1.5f); // slightly above and behind (relative to car's local space)
+        //Vector3 localOffset = new Vector3(0.15f, 0.1f, 0.2f);
+        Vector3 localOffset = new Vector3(0f, 0.5f, 1.0f); // slightly above and behind (relative to car's local space)
         Vector3 worldOffset = localOffset.cpy().mul(carRotation);
         Vector3 desiredPos = carPosition.cpy().add(worldOffset);
         // ensure camera doesn't coincide with target
@@ -146,7 +147,7 @@ public class GameScreen extends Menu {
             desiredPos.add(0.01f, 0.02f, 0.03f);
         }
         camera.position.set(desiredPos);
-        camera.lookAt(carPosition);
+        camera.lookAt(carPosition.cpy().add(0, 0.2f, 0));
         // guard against colinearity between direction and up
         if (Math.abs(camera.direction.dot(Vector3.Y)) > 0.999f) {
             camera.up.set(Vector3.X);
@@ -163,8 +164,21 @@ public class GameScreen extends Menu {
     @Override
     public void show() {
         InputMultiplexer multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(stage);
+        //multiplexer.addProcessor(new FirstPersonCameraController(camera));
         multiplexer.addProcessor(car);
+        multiplexer.addProcessor(stage);
         Gdx.input.setInputProcessor(multiplexer);
+    }
+
+    @Override
+    public void dispose() {
+        sceneManager.dispose();
+        brdfLUT.dispose();
+        diffuseCubemap.dispose();
+        specularCubemap.dispose();
+        environmentCubemap.dispose();
+        skybox.dispose();
+        car.dispose();
+        super.dispose();
     }
 }

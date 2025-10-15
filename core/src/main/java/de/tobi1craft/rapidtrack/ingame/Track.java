@@ -37,4 +37,10 @@ public class Track {
     private SceneAsset getBlock(Blocks block) {
         return blocks.get(block);
     }
+
+    public void dispose() {
+        for (Blocks block : getUsedBlocks()) {
+            RapidTrack.getInstance().getAssets().unload("blocks/" + block.getPath() + ".glb");
+        }
+    }
 }
