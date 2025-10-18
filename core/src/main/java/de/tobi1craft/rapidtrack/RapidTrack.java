@@ -2,6 +2,7 @@ package de.tobi1craft.rapidtrack;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.tobi1craft.rapidtrack.destinations.Destination;
@@ -51,6 +52,7 @@ public class RapidTrack extends Game {
         instance = this;
         settings = Gdx.app.getPreferences("settings");
         assets = new RTAssetManager();
+        Bullet.init(false, true);
         musicManager = new MusicManager(assets, 0.02f);
 
         setScreen(Screens.STARTUP);
@@ -68,7 +70,7 @@ public class RapidTrack extends Game {
 
     @Override
     public void render() {
-        ScreenUtils.clear(Color.CLEAR, true);
+        ScreenUtils.clear(Color.CLEAR, true); //TODO: mit anti-aliasing
         super.render();
 
         if (assets.isFinished()) return;
