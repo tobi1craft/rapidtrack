@@ -44,7 +44,28 @@ public class GameScreen extends Menu {
     private FirstPersonCameraController controller; //? Do my own controller
 
 
+    //!Bullet:
+
+
+
+
+
+
+
+
+
+
     public GameScreen() {
+        //! Bullet:
+
+
+
+
+
+
+
+
+
         stage = new Stage(new ScreenViewport(), ResourceManager.getInstance().getBatch());
 
         Table table = new Table();
