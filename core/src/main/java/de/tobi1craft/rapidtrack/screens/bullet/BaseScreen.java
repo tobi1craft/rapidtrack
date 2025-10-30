@@ -25,9 +25,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import de.tobi1craft.rapidtrack.util.bullet.BulletPhysicsSystem;
-import de.tobi1craft.rapidtrack.util.bullet.CameraController;
-import de.tobi1craft.rapidtrack.util.bullet.FirstPersonCameraController;
 import de.tobi1craft.rapidtrack.util.bullet.MotionState;
+import de.tobi1craft.rapidtrack.util.bullet.camera.CameraController;
+import de.tobi1craft.rapidtrack.util.bullet.camera.FirstPersonCameraController;
 
 
 public class BaseScreen extends ScreenAdapter {
