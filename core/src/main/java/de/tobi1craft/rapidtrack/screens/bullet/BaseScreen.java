@@ -1,4 +1,4 @@
-package de.tobi1craft.rapidtrack.screens;
+package de.tobi1craft.rapidtrack.screens.bullet;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -9,19 +9,25 @@ import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
-import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.ConeShapeBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.CylinderShapeBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.SphereShapeBuilder;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
+import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import de.tobi1craft.rapidtrack.util.BulletPhysicsSystem;
+import de.tobi1craft.rapidtrack.util.bullet.BulletPhysicsSystem;
+import de.tobi1craft.rapidtrack.util.bullet.CameraController;
+import de.tobi1craft.rapidtrack.util.bullet.FirstPersonCameraController;
+import de.tobi1craft.rapidtrack.util.bullet.MotionState;
 
 
 public class BaseScreen extends ScreenAdapter {
@@ -34,7 +40,7 @@ public class BaseScreen extends ScreenAdapter {
     private final Stage stage;
 
     protected PerspectiveCamera camera;
-    protected FirstPersonCameraController cameraController;
+    protected CameraController cameraController;
     protected ModelBatch modelBatch;
     protected ModelBatch shadowBatch;
     protected Array<ModelInstance> renderInstances;
@@ -67,8 +73,8 @@ public class BaseScreen extends ScreenAdapter {
         renderInstances = new Array<>();
 
         cameraController = new FirstPersonCameraController(camera);
-        cameraController.setVelocity(50f);
-        cameraController.setDegreesPerPixel(0.2f);
+        ((FirstPersonCameraController) cameraController).setVelocity(50f);
+        ((FirstPersonCameraController) cameraController).setDegreesPerPixel(0.2f);
         Gdx.input.setInputProcessor(cameraController);
 
         colors = new Array<>();
@@ -104,6 +110,11 @@ public class BaseScreen extends ScreenAdapter {
 
         stage.act();
         stage.draw();
+    }
+
+    public void setCameraController(CameraController cameraController) {
+        this.cameraController = cameraController;
+        Gdx.input.setInputProcessor(cameraController);
     }
 
     protected void createFloor(float width, float height, float depth) {
@@ -148,6 +159,59 @@ public class BaseScreen extends ScreenAdapter {
         ModelInstance axesInstance = new ModelInstance(axesModel);
 
         renderInstances.add(axesInstance);
+    }
+
+    protected void createObjects() {
+        for (int i = -6; i < 6; i += 2) {
+            for (int j = -6; j < 6; j += 2) {
+                ModelBuilder modelBuilder = new ModelBuilder();
+                modelBuilder.begin();
+                Material material = new Material();
+                material.set(ColorAttribute.createDiffuse(getRandomColor()));
+                MeshPartBuilder builder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, material);
+
+                btCollisionShape shape;
+
+                int random = MathUtils.random(1, 4);
+                shape = switch (random) {
+                    case 1 -> {
+                        BoxShapeBuilder.build(builder, 0, 0, 0, 1f, 1f, 1f);
+                        yield new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f));
+                    }
+                    case 2 -> {
+                        ConeShapeBuilder.build(builder, 1, 1, 1, 8);
+                        yield new btConeShape(0.5f, 1f);
+                    }
+                    case 3 -> {
+                        SphereShapeBuilder.build(builder, 1, 1, 1, 8, 8);
+                        yield new btSphereShape(0.5f);
+                    }
+                    default -> {
+                        CylinderShapeBuilder.build(builder, 1, 1, 1, 8);
+                        yield new btCylinderShape(new Vector3(0.5f, 0.5f, 0.5f));
+                    }
+                };
+
+                ModelInstance box = new ModelInstance(modelBuilder.end());
+                box.transform.setToTranslation(i, MathUtils.random(10, 20), j);
+                box.transform.rotate(new Quaternion(Vector3.Z, MathUtils.random(0f, 270f)));
+
+                float mass = 1f;
+
+                Vector3 localInertia = new Vector3();
+                shape.calculateLocalInertia(mass, localInertia);
+
+                btRigidBody.btRigidBodyConstructionInfo info = new btRigidBody.btRigidBodyConstructionInfo(mass, null, shape, localInertia);
+                btRigidBody body = new btRigidBody(info);
+
+                MotionState motionState = new MotionState(box.transform);
+                body.setMotionState(motionState);
+
+
+                renderInstances.add(box);
+                bulletPhysicsSystem.addBody(body);
+            }
+        }
     }
 
     protected Color getRandomColor() {

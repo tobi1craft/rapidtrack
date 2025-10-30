@@ -7,7 +7,13 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.tobi1craft.rapidtrack.destinations.Destination;
 import de.tobi1craft.rapidtrack.enums.Screens;
-import de.tobi1craft.rapidtrack.screens.*;
+import de.tobi1craft.rapidtrack.screens.GameScreen;
+import de.tobi1craft.rapidtrack.screens.MainScreen;
+import de.tobi1craft.rapidtrack.screens.StartupScreen;
+import de.tobi1craft.rapidtrack.screens.Test3D;
+import de.tobi1craft.rapidtrack.screens.bullet.AdvancedBulletScreen;
+import de.tobi1craft.rapidtrack.screens.bullet.BasicBulletScreen;
+import de.tobi1craft.rapidtrack.screens.bullet.DynamicCharacterBulletScreen;
 import de.tobi1craft.rapidtrack.util.RTAssetManager;
 
 import java.util.HashMap;
@@ -62,6 +68,7 @@ public class RapidTrack extends Game {
             case GAME -> new GameScreen();
             case BULLET_TEST -> new BasicBulletScreen(this);
             case BULLET_TEST_ADVANCED -> new AdvancedBulletScreen(this);
+            case BULLET_TEST_DYNAMIC_CHARACTER -> new DynamicCharacterBulletScreen(this);
             //TODO all Menus
             default -> null;
         };

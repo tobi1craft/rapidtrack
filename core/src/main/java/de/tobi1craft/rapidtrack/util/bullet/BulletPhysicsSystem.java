@@ -1,4 +1,4 @@
-package de.tobi1craft.rapidtrack.util;
+package de.tobi1craft.rapidtrack.util.bullet;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
@@ -74,6 +74,7 @@ public class BulletPhysicsSystem implements Disposable {
 
     /**
      * Debug draw the physics world
+     *
      * @param camera camera to render to
      */
     public void render(Camera camera) {
@@ -94,8 +95,9 @@ public class BulletPhysicsSystem implements Disposable {
 
     /**
      * Perform a raycast in the physics world.
-     * @param from the starting position (origin) of the ray
-     * @param to the end position of the ray
+     *
+     * @param from     the starting position (origin) of the ray
+     * @param to       the end position of the ray
      * @param callback the callback object to use
      */
     public void raycast(Vector3 from, Vector3 to, RayResultCallback callback) {
