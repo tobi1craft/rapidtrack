@@ -3,10 +3,7 @@ package de.tobi1craft.rapidtrack.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
@@ -14,12 +11,16 @@ import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
+import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import de.tobi1craft.rapidtrack.util.BulletPhysicsSystem;
 
 
 public class BaseScreen extends ScreenAdapter {
@@ -36,10 +37,12 @@ public class BaseScreen extends ScreenAdapter {
     protected Array<ModelInstance> renderInstances;
     protected Environment environment;
     protected DirectionalShadowLight shadowLight;
+    protected BulletPhysicsSystem bulletPhysicsSystem;
     protected Game game;
 
     public BaseScreen(Game game) {
         this.game = game;
+        bulletPhysicsSystem = new BulletPhysicsSystem();
 
         camera = new PerspectiveCamera(60f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.near = 1f;
@@ -74,6 +77,7 @@ public class BaseScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        bulletPhysicsSystem.update(delta);
         cameraController.update(delta);
 
         ScreenUtils.clear(Color.BLACK, true);
@@ -90,6 +94,28 @@ public class BaseScreen extends ScreenAdapter {
 
         stage.act();
         stage.draw();
+    }
+
+    protected void createFloor(float width, float height, float depth) {
+        ModelBuilder modelBuilder = new ModelBuilder();
+        modelBuilder.begin();
+        MeshPartBuilder meshBuilder = modelBuilder.part("floor", GL20.GL_TRIANGLES, VertexAttribute.Position().usage | VertexAttribute.Normal().usage | VertexAttribute.TexCoords(0).usage, new Material());
+
+        BoxShapeBuilder.build(meshBuilder, width, height, depth);
+        btBoxShape btBoxShape = new btBoxShape(new Vector3(width / 2f, height / 2f, depth / 2f));
+        Model floor = modelBuilder.end();
+
+        ModelInstance floorInstance = new ModelInstance(floor);
+        floorInstance.transform.trn(0, -0.5f, 0f);
+
+        //!                                                                                        0=static object
+        btRigidBody.btRigidBodyConstructionInfo info = new btRigidBody.btRigidBodyConstructionInfo(0, null, btBoxShape, Vector3.Zero);
+        btRigidBody body = new btRigidBody(info);
+
+        body.setWorldTransform(floorInstance.transform);
+
+        renderInstances.add(floorInstance);
+        bulletPhysicsSystem.addBody(body);
     }
 
     void createAxes() {

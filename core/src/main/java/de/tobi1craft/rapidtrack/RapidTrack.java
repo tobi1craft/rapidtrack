@@ -61,6 +61,7 @@ public class RapidTrack extends Game {
             case MAIN_MENU -> new MainScreen();
             case GAME -> new GameScreen();
             case BULLET_TEST -> new BasicBulletScreen(this);
+            case BULLET_TEST_ADVANCED -> new AdvancedBulletScreen(this);
             //TODO all Menus
             default -> null;
         };
