@@ -17,6 +17,7 @@ public class AdvancedBulletScreen extends BaseScreen {
     public AdvancedBulletScreen(Game game) {
         super(game);
 
+        createAxes();
         createFloor(20, 1, 20);
         createObjects();
     }

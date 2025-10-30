@@ -83,8 +83,6 @@ public class BaseScreen extends ScreenAdapter {
         colors.add(Color.TEAL);
         colors.add(Color.BROWN);
         colors.add(Color.FIREBRICK);
-
-        createAxes();
     }
 
     @Override
