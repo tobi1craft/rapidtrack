@@ -2,6 +2,7 @@ package de.tobi1craft.rapidtrack.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
@@ -28,8 +29,10 @@ public class BaseScreen extends ScreenAdapter {
     final float GRID_MIN = -100f;
     final float GRID_MAX = 100f;
     final float GRID_STEP = 10f;
+
     private final Array<Color> colors;
     private final Stage stage;
+
     protected PerspectiveCamera camera;
     protected FirstPersonCameraController cameraController;
     protected ModelBatch modelBatch;
@@ -39,6 +42,9 @@ public class BaseScreen extends ScreenAdapter {
     protected DirectionalShadowLight shadowLight;
     protected BulletPhysicsSystem bulletPhysicsSystem;
     protected Game game;
+
+    private boolean drawDebug = false;
+
 
     public BaseScreen(Game game) {
         this.game = game;
@@ -77,6 +83,8 @@ public class BaseScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) drawDebug = !drawDebug;
+
         bulletPhysicsSystem.update(delta);
         cameraController.update(delta);
 
@@ -91,6 +99,8 @@ public class BaseScreen extends ScreenAdapter {
         modelBatch.begin(camera);
         modelBatch.render(renderInstances, environment);
         modelBatch.end();
+
+        if (drawDebug) bulletPhysicsSystem.render(camera);
 
         stage.act();
         stage.draw();

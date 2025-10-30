@@ -1,8 +1,11 @@
 package de.tobi1craft.rapidtrack.util;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.*;
+import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.badlogic.gdx.utils.Disposable;
 
 
@@ -37,12 +40,12 @@ public class BulletPhysicsSystem implements Disposable {
 
     private final btConstraintSolver constraintSolver;
 
-    //?private final DebugDrawer debugDrawer;
+    private final DebugDrawer debugDrawer;
 
     // Debug drawing ray casts
-    //?private final Vector3 lastRayFrom = new Vector3();
-    //?private final Vector3 lastRayTo = new Vector3();
-    //?private final Vector3 rayColor = new Vector3(1, 0, 1);
+    private final Vector3 lastRayFrom = new Vector3();
+    private final Vector3 lastRayTo = new Vector3();
+    private final Vector3 rayColor = new Vector3(1, 0, 1);
 
     public BulletPhysicsSystem() {
         collisionConfig = new btDefaultCollisionConfiguration();
@@ -53,10 +56,10 @@ public class BulletPhysicsSystem implements Disposable {
         constraintSolver = new btSequentialImpulseConstraintSolver();
         dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
 
-        //?debugDrawer = new DebugDrawer();
-        //?debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_DrawWireframe);
+        debugDrawer = new DebugDrawer();
+        debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_DrawWireframe);
 
-        //?dynamicsWorld.setDebugDrawer(debugDrawer);
+        dynamicsWorld.setDebugDrawer(debugDrawer);
     }
 
     /**
@@ -69,18 +72,16 @@ public class BulletPhysicsSystem implements Disposable {
         dynamicsWorld.stepSimulation(delta, 5, 1 / 60f); //! maxSubSteps: Lags aufholen; fixedTimeStep: update rate von den physics
     }
 
-    /*
+    /**
      * Debug draw the physics world
      * @param camera camera to render to
      */
-    /*
     public void render(Camera camera) {
         debugDrawer.begin(camera);
         debugDrawer.drawLine(lastRayFrom, lastRayTo, rayColor);
         dynamicsWorld.debugDrawWorld();
         debugDrawer.end();
     }
-     */
 
     /**
      * Add a rigid body to the physics world
@@ -91,14 +92,14 @@ public class BulletPhysicsSystem implements Disposable {
         dynamicsWorld.addRigidBody(body);
     }
 
-    /*
+    /**
      * Perform a raycast in the physics world.
      * @param from the starting position (origin) of the ray
      * @param to the end position of the ray
      * @param callback the callback object to use
      */
-    /*
     public void raycast(Vector3 from, Vector3 to, RayResultCallback callback) {
+        //!                               5: Damit der ray nicht direkt aus der Mitte der Kamera kommt → würde man nicht sehen
         lastRayFrom.set(from).sub(0, 5f, 0f);
 
         dynamicsWorld.rayTest(from, to, callback);
@@ -108,11 +109,11 @@ public class BulletPhysicsSystem implements Disposable {
             // This is what bullet does behind the scenes as well
             lastRayTo.set(from);
             lastRayTo.lerp(to, callback.getClosestHitFraction());
+            //? Methode ist dafür gemacht, aber hat im Tutorial nicht funktioniert: callback.getHitPointWorld(to);
         } else {
             lastRayTo.set(to);
         }
     }
-     */
 
     @Override
     public void dispose() {
