@@ -1,4 +1,4 @@
-package de.tobi1craft.rapidtrack.util.bullet;
+package de.tobi1craft.rapidtrack.bullet;
 
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;

@@ -1,4 +1,4 @@
-package de.tobi1craft.rapidtrack.screens.bullet;
+package de.tobi1craft.rapidtrack.bullet.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;

@@ -1,9 +1,10 @@
-package de.tobi1craft.rapidtrack.util.bullet;
+package de.tobi1craft.rapidtrack.bullet.camera;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import de.tobi1craft.rapidtrack.bullet.Utils3D;
 
 public class ThirdPersonCameraController extends CameraController {
     private final Vector3 position = new Vector3();

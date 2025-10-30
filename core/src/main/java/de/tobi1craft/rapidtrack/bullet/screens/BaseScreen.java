@@ -1,4 +1,4 @@
-package de.tobi1craft.rapidtrack.screens.bullet;
+package de.tobi1craft.rapidtrack.bullet.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -24,10 +24,10 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import de.tobi1craft.rapidtrack.util.bullet.BulletPhysicsSystem;
-import de.tobi1craft.rapidtrack.util.bullet.MotionState;
-import de.tobi1craft.rapidtrack.util.bullet.camera.CameraController;
-import de.tobi1craft.rapidtrack.util.bullet.camera.FirstPersonCameraController;
+import de.tobi1craft.rapidtrack.bullet.BulletPhysicsSystem;
+import de.tobi1craft.rapidtrack.bullet.MotionState;
+import de.tobi1craft.rapidtrack.bullet.camera.CameraController;
+import de.tobi1craft.rapidtrack.bullet.camera.FirstPersonCameraController;
 
 
 public class BaseScreen extends ScreenAdapter {

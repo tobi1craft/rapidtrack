@@ -1,4 +1,4 @@
-package de.tobi1craft.rapidtrack.screens.bullet;
+package de.tobi1craft.rapidtrack.bullet.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -8,9 +8,9 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.Collision;
 import com.badlogic.gdx.physics.bullet.collision.btCapsuleShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import de.tobi1craft.rapidtrack.util.bullet.BulletEntity;
-import de.tobi1craft.rapidtrack.util.bullet.MotionState;
-import de.tobi1craft.rapidtrack.util.bullet.Utils3D;
+import de.tobi1craft.rapidtrack.bullet.BulletEntity;
+import de.tobi1craft.rapidtrack.bullet.MotionState;
+import de.tobi1craft.rapidtrack.bullet.Utils3D;
 
 public class DynamicCharacterBulletScreen extends BaseScreen {
 

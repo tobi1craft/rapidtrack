@@ -5,15 +5,15 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ScreenUtils;
+import de.tobi1craft.rapidtrack.bullet.screens.AdvancedBulletScreen;
+import de.tobi1craft.rapidtrack.bullet.screens.BasicBulletScreen;
+import de.tobi1craft.rapidtrack.bullet.screens.DynamicCharacterBulletScreen;
 import de.tobi1craft.rapidtrack.destinations.Destination;
 import de.tobi1craft.rapidtrack.enums.Screens;
 import de.tobi1craft.rapidtrack.screens.GameScreen;
 import de.tobi1craft.rapidtrack.screens.MainScreen;
 import de.tobi1craft.rapidtrack.screens.StartupScreen;
 import de.tobi1craft.rapidtrack.screens.Test3D;
-import de.tobi1craft.rapidtrack.screens.bullet.AdvancedBulletScreen;
-import de.tobi1craft.rapidtrack.screens.bullet.BasicBulletScreen;
-import de.tobi1craft.rapidtrack.screens.bullet.DynamicCharacterBulletScreen;
 import de.tobi1craft.rapidtrack.util.RTAssetManager;
 
 import java.util.HashMap;

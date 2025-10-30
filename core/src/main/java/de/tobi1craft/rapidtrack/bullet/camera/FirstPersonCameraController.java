@@ -1,4 +1,4 @@
-package de.tobi1craft.rapidtrack.util.bullet;
+package de.tobi1craft.rapidtrack.bullet.camera;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
