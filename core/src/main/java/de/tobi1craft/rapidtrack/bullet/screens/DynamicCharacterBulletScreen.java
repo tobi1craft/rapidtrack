@@ -12,7 +12,10 @@ import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.Collision;
 import com.badlogic.gdx.physics.bullet.collision.btCapsuleShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.dynamics.btDefaultVehicleRaycaster;
+import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.badlogic.gdx.physics.bullet.dynamics.btVehicleRaycaster;
 import de.tobi1craft.rapidtrack.bullet.BulletEntity;
 import de.tobi1craft.rapidtrack.bullet.MotionState;
 import de.tobi1craft.rapidtrack.bullet.Utils3D;
@@ -22,14 +25,28 @@ import de.tobi1craft.rapidtrack.bullet.character.DynamicCharacterController;
 public class DynamicCharacterBulletScreen extends BaseScreen {
 
     private final DynamicCharacterController controller;
+    private final btRaycastVehicle vehicle;
 
     public DynamicCharacterBulletScreen(Game game) {
         super(game);
 
-        createObjects();
+        //createObjects();
 
         BulletEntity player = createPlayer();
         controller = new DynamicCharacterController(player, bulletPhysicsSystem);
+
+
+        btRaycastVehicle.btVehicleTuning tuning = new btRaycastVehicle.btVehicleTuning();
+        btVehicleRaycaster raycaster = new btDefaultVehicleRaycaster(bulletPhysicsSystem.getDynamicsWorld());
+        vehicle = new btRaycastVehicle(tuning, player.body(), raycaster);
+        vehicle.setCoordinateSystem(0, 1, 2);
+        vehicle.addWheel(new Vector3(1, -1f, 1), new Vector3(0, -1, 0), new Vector3(-1f, 0, 0), 0.1f, 0.5f, tuning, true);
+        vehicle.addWheel(new Vector3(-1, -1f, 1), new Vector3(0, -1, 0), new Vector3(-1f, 0, 0), 0.1f, 0.5f, tuning, true);
+        vehicle.addWheel(new Vector3(1, -1f, -1), new Vector3(0, -1, 0), new Vector3(-1f, 0, 0), 0.1f, 0.5f, tuning, false);
+        vehicle.addWheel(new Vector3(-1, -1f, -1), new Vector3(0, -1, 0), new Vector3(-1f, 0, 0), 0.1f, 0.5f, tuning, false);
+        bulletPhysicsSystem.getDynamicsWorld().addVehicle(vehicle);
+        vehicle.setSteeringValue(0.4f, 0);
+        vehicle.setSteeringValue(0.4f, 1);
 
         setCameraController(new ThirdPersonCameraController(camera, player.modelInstance()));
 
@@ -64,6 +81,10 @@ public class DynamicCharacterBulletScreen extends BaseScreen {
     @Override
     public void render(float delta) {
         controller.update(delta);
+        vehicle.applyEngineForce(1, 0);
+        vehicle.applyEngineForce(1, 1);
+        vehicle.applyEngineForce(1, 2);
+        vehicle.applyEngineForce(1, 3);
         super.render(delta);
     }
 
@@ -92,10 +113,9 @@ public class DynamicCharacterBulletScreen extends BaseScreen {
         btRigidBody.btRigidBodyConstructionInfo info = new btRigidBody.btRigidBodyConstructionInfo(mass, motionState, capsuleShape, inertia);
         btRigidBody body = new btRigidBody(info);
 
-        body.setAngularFactor(Vector3.Y); //! Fällt nicht um --> TODO: bei Auto eher center of mass
+        body.setAngularFactor(Vector3.Y); //! Fällt nicht um
         body.setActivationState(Collision.DISABLE_DEACTIVATION);
-        body.setDamping(0.75f, .99f);
-        //? body.setFriction();
+        //body.setDamping(0.75f, .99f);
 
         renderInstances.add(playerModelInstance);
         bulletPhysicsSystem.addBody(body);

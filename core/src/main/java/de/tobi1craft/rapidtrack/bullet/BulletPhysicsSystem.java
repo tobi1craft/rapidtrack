@@ -13,35 +13,28 @@ import com.badlogic.gdx.utils.Disposable;
 public class BulletPhysicsSystem implements Disposable {
 
     public static final Vector3 DEFAULT_GRAVITY = new Vector3(0, -9.81f, 0f);
-
     /**
      * Stores all btCollisionObjects and provides an interface to
      * perform queries.
      */
     private final btDynamicsWorld dynamicsWorld;
-
     /**
      * Allows to configure Bullet collision detection
      * stack allocator size, default collision algorithms and persistent manifold pool size
      */
     private final btCollisionConfiguration collisionConfig;
-
     /**
      * A collision dispatcher iterates over each pair, searches for a matching collision algorithm based on the
      * types of objects involved and executes the collision algorithm computing contact points.
      */
     private final btDispatcher dispatcher;
-
     /**
      * Broadphase collision detection provides acceleration structure to quickly reject pairs of objects
      * based on axis aligned bounding box (AABB) overlap.
      */
     private final btBroadphaseInterface broadphase;
-
     private final btConstraintSolver constraintSolver;
-
     private final DebugDrawer debugDrawer;
-
     // Debug drawing ray casts
     private final Vector3 lastRayFrom = new Vector3();
     private final Vector3 lastRayTo = new Vector3();
@@ -60,6 +53,10 @@ public class BulletPhysicsSystem implements Disposable {
         debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_DrawWireframe);
 
         dynamicsWorld.setDebugDrawer(debugDrawer);
+    }
+
+    public btDynamicsWorld getDynamicsWorld() {
+        return dynamicsWorld;
     }
 
     /**
