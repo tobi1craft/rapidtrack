@@ -71,7 +71,7 @@ public class Car extends InputAdapter {
             pressed.add(input);
         }
 
-        acceleration = -0.5f * Math.signum(speed) * (float) Math.sqrt(Math.abs(speed)); //! Default air friction
+        acceleration = 0;//-0.5f * Math.signum(speed) * (float) Math.sqrt(Math.abs(speed)); //! Default air friction
         rotation = 0;
 
         //Is Drifting? Only forwards TODO: movement in other direction than the car is looking
@@ -87,17 +87,10 @@ public class Car extends InputAdapter {
         if (pressed.contains(Inputs.RIGHT)) rotation -= isDrifting ? 80f : 50f;
 
 
-        for (Inputs input : pressed) {
-            if (keyDown.get(input, 0) == 0) continue;
-            switch (input) {
-                case ACCELERATE -> acceleration += 3f;
-                case LEFT -> rotation += 50f;
-                case RIGHT -> rotation -= 50f;
-            }
-        }
 
         Gdx.app.debug("Car", "Acceleration: " + acceleration + " | Speed: " + speed);
-        PHYSICS.setAcceleration(-0.01f * acceleration);
+        PHYSICS.setAcceleration(0.1f * acceleration);
+        PHYSICS.setSteering(rotation / 360);
         PHYSICS.render(delta);
 
         speed = PHYSICS.getSpeed();
@@ -119,10 +112,10 @@ public class Car extends InputAdapter {
 
             //Räder vorwärts/rückwärts drehen
             for (Node wheel : axle.getChildren()) {
-                wheel.getChild(0).rotation.mul(new Quaternion().setFromAxis(Vector3.X, -2.0f * speed)).nor();
+                wheel.getChild(0).rotation.mul(new Quaternion().setFromAxis(Vector3.X, 2.0f * speed)).nor();
+                //TODO: Drehgeschwindigkeit abhängig von delta und passend zur Radgröße
             }
 
-            //axle.rotation.mul(new Quaternion().setFromAxis(Vector3.X, -2.0f * speed)).nor();
         }
 
         scene.modelInstance.calculateTransforms();

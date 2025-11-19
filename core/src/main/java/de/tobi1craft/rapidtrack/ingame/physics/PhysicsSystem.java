@@ -1,6 +1,7 @@
 package de.tobi1craft.rapidtrack.ingame.physics;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btConstraintSolver;
@@ -43,7 +44,7 @@ public class PhysicsSystem implements Disposable {
         broadphase = new btDbvtBroadphase(); //! Broadphase checkt, ob sich etwas ungefähr in die Nähe kommt
         constraintSolver = new btSequentialImpulseConstraintSolver();
         dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
-        //dynamicsWorld.setGravity(new Vector3(0, -0.1f, 0));
+        dynamicsWorld.setGravity(new Vector3(0, -0.3f, 0));
 
         debugDrawer = new DebugDrawer();
         debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_DrawWireframe);

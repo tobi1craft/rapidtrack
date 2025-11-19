@@ -30,12 +30,14 @@ public class CarPhysics {
         vehicle = new btRaycastVehicle(tuning, body, raycaster);
         vehicle.setCoordinateSystem(0, 1, 2);
         Vector3 connectionPoint = new Vector3(0.125f, 0.025f, 0.225f);
-        Vector3 wheelDirection = new Vector3(0, -0.12f, 0);
-        Vector3 wheelAxle = new Vector3(-0.12f, 0, 0);
-        vehicle.addWheel(new Vector3(connectionPoint.x, connectionPoint.y, connectionPoint.z), wheelDirection, wheelAxle, 0.1f, 0.5f, tuning, true);
-        vehicle.addWheel(new Vector3(-connectionPoint.x, connectionPoint.y, connectionPoint.z), wheelDirection, wheelAxle, 0.1f, 0.5f, tuning, true);
-        vehicle.addWheel(new Vector3(connectionPoint.x, connectionPoint.y, -connectionPoint.z), wheelDirection, wheelAxle, 0.1f, 0.5f, tuning, false);
-        vehicle.addWheel(new Vector3(-connectionPoint.x, connectionPoint.y, -connectionPoint.z), wheelDirection, wheelAxle, 0.1f, 0.5f, tuning, false);
+        Vector3 wheelDirection = new Vector3(0, -1f, 0);
+        Vector3 wheelAxle = new Vector3(1f, 0, 0);
+        float suspensionRestLength = 0.00f;
+        float wheelRadius = 0.065f;
+        vehicle.addWheel(new Vector3(connectionPoint.x, connectionPoint.y, -connectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
+        vehicle.addWheel(new Vector3(-connectionPoint.x, connectionPoint.y, -connectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
+        vehicle.addWheel(new Vector3(connectionPoint.x, connectionPoint.y, connectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
+        vehicle.addWheel(new Vector3(-connectionPoint.x, connectionPoint.y, connectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
         screen.getPhysicsSystem().getDynamicsWorld().addVehicle(vehicle);
         screen.getPhysicsSystem().getDynamicsWorld().addRigidBody(body);
     }
@@ -57,7 +59,7 @@ public class CarPhysics {
         body.setActivationState(Collision.DISABLE_DEACTIVATION);
         //TODO: Friction?! --> Eher friction, weil damping auch Beschleunigungsverhalten verändert
         //TODO: Massenverteilung / center of mass
-        body.setFriction(0.5f);
+        body.setFriction(0.1f);
 
 
         return body;
