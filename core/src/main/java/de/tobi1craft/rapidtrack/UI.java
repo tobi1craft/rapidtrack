@@ -27,6 +27,7 @@ public class UI {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/copse.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = size;
+        parameter.color = color;
         BitmapFont font = generator.generateFont(parameter);
         fonts.put(size, font);
         generator.dispose();

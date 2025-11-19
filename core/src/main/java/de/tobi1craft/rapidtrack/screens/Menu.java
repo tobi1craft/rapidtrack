@@ -13,10 +13,6 @@ public abstract class Menu implements Screen {
     protected Stage stage;
     protected BiConsumer<Integer, Integer> resize;
 
-    public Stage getStage() {
-        return stage;
-    }
-
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
