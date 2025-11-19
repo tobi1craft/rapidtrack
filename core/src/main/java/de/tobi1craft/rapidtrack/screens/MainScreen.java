@@ -40,7 +40,7 @@ public class MainScreen extends Menu {
             // start the game when the button is clicked
             button.addListener(new ChangeListener() {
                 public void changed(ChangeEvent event, Actor actor) {
-                    RapidTrack.getInstance().setScreen(Screens.BULLET_TEST_DYNAMIC_CHARACTER);
+                    RapidTrack.getInstance().setScreen(Screens.GAME);
                 }
             });
         };

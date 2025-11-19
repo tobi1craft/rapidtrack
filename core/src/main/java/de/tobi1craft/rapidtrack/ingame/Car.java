@@ -8,6 +8,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ObjectIntMap;
+import de.tobi1craft.rapidtrack.ingame.physics.CarPhysics;
+import de.tobi1craft.rapidtrack.screens.GameScreen;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.scene.Scene;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
@@ -18,6 +20,10 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class Car extends InputAdapter {
+
+    private final GameScreen screen;
+    private final CarPhysics PHYSICS;
+
     private final Scene scene;
     private final SceneAsset asset;
     private final Map<Integer, Consumer<Boolean>> keyBindings = new HashMap<>(); //! Verwirrend → erklären
@@ -29,12 +35,17 @@ public class Car extends InputAdapter {
     private boolean isDrifting = false;
 
 
-    public Car() {
+    public Car(GameScreen screen) {
+        this.screen = screen;
+
         //?! STUCK: SceneAsset asset = RapidTrack.getInstance().getAssets().loadAndGet("models/car.gltf", SceneAsset.class);
         asset = new GLTFLoader().load(Gdx.files.internal("models/car.gltf"));
         scene = new Scene(asset.scene.model, true);
-        scene.modelInstance.transform.translate(new Vector3(0, 0.0625f, 0));
+        scene.modelInstance.transform.translate(new Vector3(0, 0.2625f, 0));
         scene.modelInstance.transform.scale(0.5f, 0.5f, 0.5f);
+
+
+        PHYSICS = new CarPhysics(screen, scene.modelInstance, 500f);
 
 
         //scene.animationController.setAnimation("drive", -1, 10, null);
@@ -46,7 +57,6 @@ public class Car extends InputAdapter {
         keyBindings.put(Input.Keys.S, (Boolean pressed) -> keyDown.getAndIncrement(Inputs.BRAKE, 0, pressed ? 1 : -1));
         keyBindings.put(Input.Keys.D, (Boolean pressed) -> keyDown.getAndIncrement(Inputs.RIGHT, 0, pressed ? 1 : -1));
         keyBindings.put(Input.Keys.SPACE, (Boolean pressed) -> keyDown.getAndIncrement(Inputs.BRAKE, 0, pressed ? 1 : -1));
-
     }
 
     public Scene getScene() {
@@ -86,16 +96,14 @@ public class Car extends InputAdapter {
             }
         }
 
+        Gdx.app.debug("Car", "Acceleration: " + acceleration + " | Speed: " + speed);
+        PHYSICS.setAcceleration(-0.01f * acceleration);
+        PHYSICS.render(delta);
 
-        speed += acceleration * delta;
-        Vector3 translation = new Vector3(0, 0, -speed * delta);
-        //!                                                Lenkung halbiert    Kurvenschärfe
-        float attenuation = 1f / (1f + (float) Math.pow(Math.abs(speed) / 4f, 2f));
-        Quaternion rotation = new Quaternion().setFromAxis(Vector3.Y, this.rotation * attenuation * delta * speed);
+        speed = PHYSICS.getSpeed();
 
 
         Node wheels = scene.modelInstance.getNode("wheels", true);
-        Node frontWheels;
         for (Node axle : wheels.getChildren()) {
             //Lenkung
             if (axle.id.equals("front_wheels")) {
@@ -109,7 +117,7 @@ public class Car extends InputAdapter {
                 }
             }
 
-            //Räder drehen
+            //Räder vorwärts/rückwärts drehen
             for (Node wheel : axle.getChildren()) {
                 wheel.getChild(0).rotation.mul(new Quaternion().setFromAxis(Vector3.X, -2.0f * speed)).nor();
             }
@@ -117,13 +125,7 @@ public class Car extends InputAdapter {
             //axle.rotation.mul(new Quaternion().setFromAxis(Vector3.X, -2.0f * speed)).nor();
         }
 
-
         scene.modelInstance.calculateTransforms();
-
-
-        //Gdx.app.log("Car", "Speed: " + (int) (speed * 1000) + ", Attenuation: " + attenuation);
-        if (Math.abs(speed) > 0.05f) scene.modelInstance.transform.rotate(rotation);
-        scene.modelInstance.transform.translate(translation);
     }
 
 

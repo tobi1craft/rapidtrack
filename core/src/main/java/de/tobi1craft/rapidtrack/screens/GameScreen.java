@@ -1,14 +1,16 @@
 package de.tobi1craft.rapidtrack.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -18,10 +20,13 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.tobi1craft.rapidtrack.RapidTrack;
 import de.tobi1craft.rapidtrack.ResourceManager;
 import de.tobi1craft.rapidtrack.UI;
+import de.tobi1craft.rapidtrack.bullet.camera.CameraController;
 import de.tobi1craft.rapidtrack.enums.Screens;
 import de.tobi1craft.rapidtrack.ingame.Block;
 import de.tobi1craft.rapidtrack.ingame.Car;
 import de.tobi1craft.rapidtrack.ingame.Track;
+import de.tobi1craft.rapidtrack.ingame.camera.Cam1;
+import de.tobi1craft.rapidtrack.ingame.physics.PhysicsSystem;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
 import net.mgsx.gltf.scene3d.lights.DirectionalLightEx;
@@ -41,47 +46,28 @@ public class GameScreen extends Menu {
     private final Texture brdfLUT;
     private final SceneSkybox skybox;
     private final DirectionalLightEx light;
-    private FirstPersonCameraController controller; //? Do my own controller
+    private final CameraController cameraController;
+    private final PhysicsSystem physicsSystem;
 
-
-    //!Bullet:
-
-
-
-
-
-
-
-
-
+    private boolean drawDebug = false; //TODO: Input handling on this screen for debug and maybe cam switch --> maybe somewhere else
 
     public GameScreen() {
-        //! Bullet:
+        setupStage();
 
-
-
-
-
-
-
-
-
-        stage = new Stage(new ScreenViewport(), ResourceManager.getInstance().getBatch());
-
-        Table table = new Table();
-        table.setFillParent(true);
-        table.setDebug(true);
-        stage.addActor(table);
-
+        physicsSystem = new PhysicsSystem();
 
         sceneManager = new SceneManager();
 
         track = new Track();
         for (Block block : track.grid) {
             sceneManager.addScene(block.getScene());
+            btCollisionShape shape = Bullet.obtainStaticNodeShape(block.getScene().modelInstance.nodes);
+            btRigidBody.btRigidBodyConstructionInfo sceneInfo = new btRigidBody.btRigidBodyConstructionInfo(0, null, shape, Vector3.Zero);
+            btRigidBody sceneBody = new btRigidBody(sceneInfo);
+            physicsSystem.getDynamicsWorld().addRigidBody(sceneBody);
         }
 
-        car = new Car();
+        car = new Car(this);
         sceneManager.addScene(car.getScene());
 
 
@@ -90,6 +76,10 @@ public class GameScreen extends Menu {
         camera.near = 0.1f;
         camera.far = 100;
         sceneManager.setCamera(camera);
+
+        if (drawDebug) physicsSystem.render(camera);
+        cameraController = new Cam1(camera, car.getScene().modelInstance);
+        //cameraController = new FreeCam(camera);
 
 
         // setup light
@@ -118,6 +108,20 @@ public class GameScreen extends Menu {
         sceneManager.setSkyBox(skybox);
 
 
+    }
+
+    public PhysicsSystem getPhysicsSystem() {
+        return physicsSystem;
+    }
+
+    private void setupStage() {
+        stage = new Stage(new ScreenViewport(), ResourceManager.getInstance().getBatch());
+
+        Table table = new Table();
+        table.setFillParent(true);
+        table.setDebug(true);
+        stage.addActor(table);
+
         resize = (width, height) -> {
             table.clearChildren();
 
@@ -143,17 +147,23 @@ public class GameScreen extends Menu {
 
     @Override
     public void render(float delta) {
-        // Keep camera controller in sync (movement/rotation)
-        if (controller != null) {
-            controller.update(delta);
-        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) drawDebug = !drawDebug;
 
         car.render(delta);
 
+        sceneManager.update(delta);
+        sceneManager.render();
 
-        //TODO: - Seitwärts Drehung auch bei Kamera?!
-        //      - X-Achsen Drehung -> Kamera springt
-        //      - Freecam
+        physicsSystem.update(delta);
+
+        // Keep camera controller in sync (movement/rotation)
+        cameraController.update(delta);
+
+        if (drawDebug) physicsSystem.render(camera);
+
+        /*
+        //- Seitwärts Drehung auch bei Kamera?!
+        //- X-Achsen Drehung -> Kamera springt
 
         // animate camera using car-local offset transformed by car rotation
         camera.up.set(Vector3.Y);
@@ -173,19 +183,16 @@ public class GameScreen extends Menu {
         if (Math.abs(camera.direction.dot(Vector3.Y)) > 0.999f) {
             camera.up.set(Vector3.X);
         }
+        */
 
-        camera.update();
 
-        sceneManager.update(delta);
-        sceneManager.render();
-
-        super.render(delta);
+        super.render(delta); //Rendert hauptsächlich die Stage
     }
 
     @Override
     public void show() {
         InputMultiplexer multiplexer = new InputMultiplexer();
-        //multiplexer.addProcessor(new FirstPersonCameraController(camera));
+        multiplexer.addProcessor(cameraController);
         multiplexer.addProcessor(car);
         multiplexer.addProcessor(stage);
         Gdx.input.setInputProcessor(multiplexer);

@@ -47,7 +47,7 @@ public class BaseScreen extends ScreenAdapter {
     protected Environment environment;
     protected DirectionalShadowLight shadowLight;
     protected BulletPhysicsSystem bulletPhysicsSystem;
-    protected Game game;
+    protected Game game; //TODO: use to change screen with menu
 
     private boolean drawDebug = false;
 
@@ -68,7 +68,7 @@ public class BaseScreen extends ScreenAdapter {
 
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
-        modelBatch = new ModelBatch();
+        modelBatch = new ModelBatch(); //TODO: vlt anderen Shader verwenden
         shadowBatch = new ModelBatch(new DepthShaderProvider());
         renderInstances = new Array<>();
 
