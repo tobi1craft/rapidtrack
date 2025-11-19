@@ -25,7 +25,7 @@ import de.tobi1craft.rapidtrack.enums.Screens;
 import de.tobi1craft.rapidtrack.ingame.Block;
 import de.tobi1craft.rapidtrack.ingame.Car;
 import de.tobi1craft.rapidtrack.ingame.Track;
-import de.tobi1craft.rapidtrack.ingame.camera.Cam1;
+import de.tobi1craft.rapidtrack.ingame.camera.FreeCam;
 import de.tobi1craft.rapidtrack.ingame.physics.PhysicsSystem;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
@@ -79,8 +79,8 @@ public class GameScreen extends Menu {
         sceneManager.setCamera(camera);
 
         if (drawDebug) physicsSystem.render(camera);
-        cameraController = new Cam1(camera, car.getScene().modelInstance);
-        //cameraController = new FreeCam(camera);
+        //cameraController = new Cam1(camera, car.getScene().modelInstance);
+        cameraController = new FreeCam(camera);
 
 
         // setup light
