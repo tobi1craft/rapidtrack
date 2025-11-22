@@ -25,7 +25,7 @@ import de.tobi1craft.rapidtrack.enums.Screens;
 import de.tobi1craft.rapidtrack.ingame.Block;
 import de.tobi1craft.rapidtrack.ingame.Car;
 import de.tobi1craft.rapidtrack.ingame.Track;
-import de.tobi1craft.rapidtrack.ingame.camera.FreeCam;
+import de.tobi1craft.rapidtrack.ingame.camera.Cam1;
 import de.tobi1craft.rapidtrack.ingame.physics.PhysicsSystem;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
@@ -79,8 +79,8 @@ public class GameScreen extends Menu {
         sceneManager.setCamera(camera);
 
         if (drawDebug) physicsSystem.render(camera);
-        //cameraController = new Cam1(camera, car.getScene().modelInstance);
-        cameraController = new FreeCam(camera);
+        cameraController = new Cam1(camera, car.getScene().modelInstance);
+        //cameraController = new FreeCam(camera);
 
 
         // setup light
@@ -161,31 +161,6 @@ public class GameScreen extends Menu {
         cameraController.update(delta);
 
         if (drawDebug) physicsSystem.render(camera);
-
-        /*
-        //- Seitwärts Drehung auch bei Kamera?!
-        //- X-Achsen Drehung -> Kamera springt
-
-        // animate camera using car-local offset transformed by car rotation
-        camera.up.set(Vector3.Y);
-        Vector3 carPosition = car.getTranslation();
-        Quaternion carRotation = car.getRotation();
-        //Vector3 localOffset = new Vector3(0.15f, 0.1f, 0.2f);
-        Vector3 localOffset = new Vector3(0f, 0.5f, 1.0f); // slightly above and behind (relative to car's local space)
-        Vector3 worldOffset = localOffset.cpy().mul(carRotation);
-        Vector3 desiredPos = carPosition.cpy().add(worldOffset);
-        // ensure camera doesn't coincide with target
-        if (desiredPos.epsilonEquals(carPosition, 1e-6f)) {
-            desiredPos.add(0.01f, 0.02f, 0.03f);
-        }
-        camera.position.set(desiredPos);
-        camera.lookAt(carPosition.cpy().add(0, 0.2f, 0));
-        // guard against colinearity between direction and up
-        if (Math.abs(camera.direction.dot(Vector3.Y)) > 0.999f) {
-            camera.up.set(Vector3.X);
-        }
-        */
-
 
         super.render(delta); //Rendert hauptsächlich die Stage
     }
