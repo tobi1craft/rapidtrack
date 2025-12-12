@@ -19,9 +19,7 @@ public class Track {
 
     public Track() {
         load();
-        grid.add(new Block(getBlock(Blocks.ROAD_STRAIGHT), new Vector3(0, 0, 0)));
-        grid.add(new Block(getBlock(Blocks.ROAD_STRAIGHT), new Vector3(0, 0, 1)));
-        grid.add(new Block(getBlock(Blocks.ROAD_STRAIGHT), new Vector3(0, 0, 2)));
+        for (int i = -10; i <= 10; i++) grid.add(new Block(getBlock(Blocks.ROAD_STRAIGHT), new Vector3(0, 0, i * 10)));
     }
 
     public void load() {

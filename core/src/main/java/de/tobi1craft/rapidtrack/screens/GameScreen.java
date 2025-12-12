@@ -62,6 +62,7 @@ public class GameScreen extends Menu {
         for (Block block : track.grid) {
             sceneManager.addScene(block.getScene());
             btCollisionShape shape = Bullet.obtainStaticNodeShape(block.getScene().modelInstance.nodes);
+            shape.setMargin(0f);
             btRigidBody.btRigidBodyConstructionInfo sceneInfo = new btRigidBody.btRigidBodyConstructionInfo(0, null, shape, Vector3.Zero);
             btRigidBody sceneBody = new btRigidBody(sceneInfo);
             sceneBody.setWorldTransform(block.getScene().modelInstance.transform);

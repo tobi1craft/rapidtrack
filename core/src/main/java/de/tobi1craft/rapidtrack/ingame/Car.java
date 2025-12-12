@@ -41,8 +41,7 @@ public class Car extends InputAdapter {
         //?! STUCK: SceneAsset asset = RapidTrack.getInstance().getAssets().loadAndGet("models/car.gltf", SceneAsset.class);
         asset = new GLTFLoader().load(Gdx.files.internal("models/car.gltf"));
         scene = new Scene(asset.scene.model, true);
-        scene.modelInstance.transform.translate(new Vector3(0, 0.2625f, 0));
-        scene.modelInstance.transform.scale(0.5f, 0.5f, 0.5f);
+        scene.modelInstance.transform.translate(new Vector3(0.5f, 2f, 0.5f));
 
 
         PHYSICS = new CarPhysics(screen, scene.modelInstance, 500f);

@@ -3,9 +3,7 @@ package de.tobi1craft.rapidtrack.ingame.physics;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.physics.bullet.collision.Collision;
-import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btDefaultVehicleRaycaster;
 import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
@@ -24,16 +22,18 @@ public class CarPhysics {
         this.modelInstance = modelInstance;
         this.mass = mass;
 
-        btRigidBody body = createBody();
+        BoundingBox boundingBox = new BoundingBox(); //TODO: remove when new model is used
+
+        btRigidBody body = createBody(boundingBox);
         btRaycastVehicle.btVehicleTuning tuning = new btRaycastVehicle.btVehicleTuning();
         btVehicleRaycaster raycaster = new btDefaultVehicleRaycaster(screen.getPhysicsSystem().getDynamicsWorld());
         vehicle = new btRaycastVehicle(tuning, body, raycaster);
         vehicle.setCoordinateSystem(0, 1, 2);
-        Vector3 connectionPoint = new Vector3(0.125f, 0.025f, 0.225f);
+        Vector3 connectionPoint = new Vector3(0.25f, 0, 0.45f);
         Vector3 wheelDirection = new Vector3(0, -1f, 0);
         Vector3 wheelAxle = new Vector3(1f, 0, 0);
-        float suspensionRestLength = 0.00f;
-        float wheelRadius = 0.065f;
+        float suspensionRestLength = 0.1f;
+        float wheelRadius = boundingBox.getHeight() / 2 + 0.001f;
         vehicle.addWheel(new Vector3(connectionPoint.x, connectionPoint.y, -connectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
         vehicle.addWheel(new Vector3(-connectionPoint.x, connectionPoint.y, -connectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
         vehicle.addWheel(new Vector3(connectionPoint.x, connectionPoint.y, connectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
@@ -42,8 +42,7 @@ public class CarPhysics {
         screen.getPhysicsSystem().getDynamicsWorld().addRigidBody(body);
     }
 
-    private btRigidBody createBody() {
-        BoundingBox boundingBox = new BoundingBox();
+    private btRigidBody createBody(BoundingBox boundingBox) {
         modelInstance.calculateBoundingBox(boundingBox);
 
         CarMotionState motionState = new CarMotionState(modelInstance.transform, boundingBox);

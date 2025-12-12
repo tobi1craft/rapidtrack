@@ -44,7 +44,7 @@ public class PhysicsSystem implements Disposable {
         broadphase = new btDbvtBroadphase(); //! Broadphase checkt, ob sich etwas ungefähr in die Nähe kommt
         constraintSolver = new btSequentialImpulseConstraintSolver();
         dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
-        dynamicsWorld.setGravity(new Vector3(0, -0.3f, 0));
+        dynamicsWorld.setGravity(new Vector3(0, -3.5f, 0));
 
         debugDrawer = new DebugDrawer();
         debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_DrawWireframe);
@@ -54,7 +54,7 @@ public class PhysicsSystem implements Disposable {
 
     public void update(float delta) {
         // performs collision detection and physics simulation
-        dynamicsWorld.stepSimulation(delta, 5, 1 / 60f); //! maxSubSteps: Lags aufholen; fixedTimeStep: update rate von den physics
+        dynamicsWorld.stepSimulation(delta, 5, 1 / 100f); //! maxSubSteps: Lags aufholen; fixedTimeStep: update rate von den physics
     }
 
     public void render(Camera camera) {

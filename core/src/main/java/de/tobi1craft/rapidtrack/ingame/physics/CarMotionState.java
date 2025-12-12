@@ -30,6 +30,6 @@ public class CarMotionState extends btMotionState {
      */
     @Override
     public void setWorldTransform(Matrix4 worldTrans) {
-        transform.set(worldTrans.cpy().translate(0, -boundingBox.getHeight() / 2f, 0));
+        transform.set(worldTrans);//.cpy().translate(0, -boundingBox.getHeight() / 2f, 0)); //TODO: Compound shape --> dann unnötig?
     }
 }
