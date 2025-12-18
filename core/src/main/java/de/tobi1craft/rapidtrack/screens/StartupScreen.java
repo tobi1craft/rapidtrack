@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.tobi1craft.rapidtrack.RapidTrack;
 import de.tobi1craft.rapidtrack.ResourceManager;
 import de.tobi1craft.rapidtrack.UI;
-import de.tobi1craft.rapidtrack.enums.Screens;
 
 public class StartupScreen extends Menu {
 
@@ -40,7 +39,7 @@ public class StartupScreen extends Menu {
             // start the game when the button is clicked
             button.addListener(new ChangeListener() {
                 public void changed(ChangeEvent event, Actor actor) {
-                    if (assets.isFinished()) RapidTrack.getInstance().setScreen(Screens.MAIN_MENU);
+                    if (assets.isFinished()) RapidTrack.getInstance().actualStart();
                 }
             });
         };

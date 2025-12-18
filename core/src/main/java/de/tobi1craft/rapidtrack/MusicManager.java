@@ -11,8 +11,8 @@ import java.util.List;
 public class MusicManager {
     private final RTAssetManager assets;
     private final String startupMusic = AssetsHelper.getFilesInDirectory("music", ".*startup.*\\.(mp3|wav|ogg)$", null).getFirst();
-    private final String mainMusicStart = AssetsHelper.getFilesInDirectory("music/main", ".*start.*\\.(mp3|wav|ogg)$", null).getFirst();
-    private final List<String> mainMusic = AssetsHelper.getFilesInDirectory("music/main", ".*\\.(mp3|wav|ogg)$", ".*start.*");
+    private final String mainMusicStart = AssetsHelper.getFilesInDirectory("music/d70", ".*start.*\\.(mp3|wav|ogg)$", null).getFirst();
+    private final List<String> mainMusic = AssetsHelper.getFilesInDirectory("music/d70", ".*\\.(mp3|wav|ogg)$", ".*start.*");
     private String current;
     private Music music;
     private float volume;
@@ -22,17 +22,6 @@ public class MusicManager {
         this.volume = volume;
         if (volume != 0) {
             startup();
-        }
-    }
-
-    public void setScreen(Screens screen) {
-        switch (screen) {
-            case MAIN_MENU, SETTINGS -> {
-                Screens s = RapidTrack.getInstance().whichScreen();
-                if (s == Screens.MAIN_MENU || s == Screens.SETTINGS) break;
-                mainMenu(true);
-            }
-            //TODO: start music for other screens
         }
     }
 
@@ -48,7 +37,7 @@ public class MusicManager {
         if (volume == this.volume) return;
         if (this.volume == 0) {
             switch (RapidTrack.getInstance().whichScreen()) {
-                case MAIN_MENU, SETTINGS -> mainMenu(false);
+                case MAIN_MENU, SETTINGS -> mainMusic(false);
                 //TODO: start music for other screens
             }
         }
@@ -65,11 +54,11 @@ public class MusicManager {
         assets.load(mainMusicStart, Music.class);
         music.setOnCompletionListener(_ -> {
             assets.unload(startupMusic);
-            RapidTrack.getInstance().setScreen(Screens.MAIN_MENU);
+            RapidTrack.getInstance().actualStart();
         });
     }
 
-    private void mainMenu(boolean start) {
+    public void mainMusic(boolean start) {
         if (music.isPlaying()) music.stop();
         if (volume == 0) return;
         if (start) current = mainMusicStart;
@@ -84,7 +73,7 @@ public class MusicManager {
 
         music.setOnCompletionListener(_ -> {
             assets.unload(old);
-            if (RapidTrack.getInstance().whichScreen() == Screens.MAIN_MENU) mainMenu(false);
+            if (RapidTrack.getInstance().whichScreen() == Screens.MAIN_MENU) mainMusic(false);
         });
     }
 }
