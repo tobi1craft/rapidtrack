@@ -26,6 +26,7 @@ import de.tobi1craft.rapidtrack.ingame.Block;
 import de.tobi1craft.rapidtrack.ingame.Car;
 import de.tobi1craft.rapidtrack.ingame.Track;
 import de.tobi1craft.rapidtrack.ingame.camera.Cam1;
+import de.tobi1craft.rapidtrack.ingame.camera.FreeCam;
 import de.tobi1craft.rapidtrack.ingame.physics.PhysicsSystem;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
@@ -46,9 +47,8 @@ public class GameScreen extends Menu {
     private final Texture brdfLUT;
     private final SceneSkybox skybox;
     private final DirectionalLightEx light;
-    private final CameraController cameraController;
     private final PhysicsSystem physicsSystem;
-
+    private CameraController cameraController;
     private boolean drawDebug = false; //TODO: Input handling on this screen for debug and maybe cam switch --> maybe somewhere else
 
     public GameScreen() {
@@ -75,13 +75,12 @@ public class GameScreen extends Menu {
 
         // setup camera (use a reasonable near/far to preserve depth precision)
         camera = new PerspectiveCamera(60f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.near = 0.1f;
-        camera.far = 100;
+        camera.near = 0.2f;
+        camera.far = 1000;
         sceneManager.setCamera(camera);
 
         if (drawDebug) physicsSystem.render(camera);
-        cameraController = new Cam1(camera, car.getScene().modelInstance);
-        //cameraController = new FreeCam(camera);
+        cameraController = new Cam1(camera, car);
 
 
         // setup light
@@ -150,6 +149,11 @@ public class GameScreen extends Menu {
     @Override
     public void render(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) drawDebug = !drawDebug;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
+            if (cameraController instanceof Cam1) cameraController = new FreeCam(camera);
+            else cameraController = new Cam1(camera, car);
+            show();
+        }
 
         car.render(delta);
 

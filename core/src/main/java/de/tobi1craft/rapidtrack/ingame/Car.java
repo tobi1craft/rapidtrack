@@ -140,16 +140,12 @@ public class Car extends InputAdapter {
     }
 
 
-    public Vector3 getTranslation() {
+    public Vector3 getPosition() {
         return scene.modelInstance.transform.getTranslation(new Vector3());
     }
 
-    public Quaternion getRotation() {
-        return scene.modelInstance.transform.getRotation(new Quaternion(), true);
-    }
-
-    public Vector3 getScale() {
-        return scene.modelInstance.transform.getScale(new Vector3());
+    public float getSpeed() {
+        return PHYSICS.getSpeed();
     }
 
     public void dispose() {

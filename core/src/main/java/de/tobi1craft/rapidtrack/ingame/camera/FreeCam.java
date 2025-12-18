@@ -13,12 +13,17 @@ public class FreeCam extends CameraController {
 
     private final Camera camera;
     private final ArrayList<Integer> keys = new ArrayList<>();
-    private float yaw;
-    private float pitch;
+    private float yaw; //! horizontal (links/rechts um Y)
+    private float pitch; //! vertical (hoch/runter um X)
+    private float speed = 15f;
 
 
     public FreeCam(Camera camera) {
         this.camera = camera;
+        // Init yaw and pitch from the current camera direction
+        Vector3 dir = camera.direction.cpy().nor();
+        pitch = MathUtils.asinDeg(-dir.y);
+        yaw = MathUtils.atan2Deg(dir.x, dir.z); //TODO: arctan2 erklären
     }
 
     @Override
@@ -39,13 +44,16 @@ public class FreeCam extends CameraController {
         float deltaX = -Gdx.input.getDeltaX() * sensitivity;
         float deltaY = Gdx.input.getDeltaY() * sensitivity;
 
-        yaw = ((yaw + deltaX + 180) % 360) - 180;
+        yaw = ((yaw + deltaX + 540) % 360) - 180;
         pitch = MathUtils.clamp(pitch + deltaY, -89, 89);
 
-        Vector3 direction = new Vector3(0, 0, 1)
-            .rotate(Vector3.Y, yaw)
-            .rotate(camera.direction.cpy().crs(Vector3.Y).nor(), -pitch) //! Kreuzprodukt, weil wenn um x-Achse würde es mal richtig und mal falschrum hoch/runter bewegen
-            .nor();
+        Vector3 direction = new Vector3(
+            MathUtils.cosDeg(pitch) * MathUtils.sinDeg(yaw), // x
+            -MathUtils.sinDeg(pitch),                           // y (negative to match previous control feel)
+            MathUtils.cosDeg(pitch) * MathUtils.cosDeg(yaw)     // z
+        ).nor();
+        //! X und Z sind mit MathUtils.cosDeg(pitch) skaliert, weil der Wert kleiner ist, je nachdem, wie hoch/runter man guckt
+        //TODO: --> visualisieren
 
         camera.direction.set(direction);
 
@@ -65,17 +73,28 @@ public class FreeCam extends CameraController {
     }
 
     @Override
+    public boolean scrolled(float amountX, float amountY) {
+        if (amountY == 0) return false;
+        speed = MathUtils.clamp(speed - amountY, 10, 30);
+        return true;
+    }
+
+    @Override
     public void update(float delta) {
-        //TODO: use global input processor?! --> only accept keyUp/Down when right key is pressed
-        float speed = 2f;
+        //TODO: use global input processor?!
+        float scaledSpeed = (float) Math.pow(200, (speed - 10) / 20); //! Skalierter output, damit man nicht ewig scrollen muss
         for (int key : keys) {
             switch (key) {
-                case Input.Keys.W -> camera.position.add(camera.direction.cpy().scl(delta * speed));
-                case Input.Keys.A -> camera.position.add(camera.direction.cpy().crs(camera.up).scl(-delta * speed));
-                case Input.Keys.D -> camera.position.add(camera.direction.cpy().crs(camera.up).scl(delta * speed));
-                case Input.Keys.S -> camera.position.add(camera.direction.cpy().scl(-delta * speed));
-                case Input.Keys.SPACE -> camera.position.add(camera.up.cpy().scl(delta * speed));
-                case Input.Keys.SHIFT_LEFT -> camera.position.add(camera.up.cpy().scl(-delta * speed));
+                case Input.Keys.W ->
+                    camera.position.add(camera.direction.cpy().scl(1, 0, 1).nor().scl(delta * scaledSpeed));
+                case Input.Keys.S ->
+                    camera.position.add(camera.direction.cpy().scl(1, 0, 1).nor().scl(-delta * scaledSpeed));
+                case Input.Keys.A ->
+                    camera.position.add(camera.direction.cpy().crs(Vector3.Y).scl(-delta * scaledSpeed));
+                case Input.Keys.D ->
+                    camera.position.add(camera.direction.cpy().crs(Vector3.Y).scl(delta * scaledSpeed));
+                case Input.Keys.SPACE -> camera.position.add(Vector3.Y.cpy().scl(delta * scaledSpeed));
+                case Input.Keys.SHIFT_LEFT -> camera.position.add(Vector3.Y.cpy().scl(-delta * scaledSpeed));
             }
         }
         camera.update();
