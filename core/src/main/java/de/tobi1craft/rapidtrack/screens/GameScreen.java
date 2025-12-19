@@ -61,12 +61,15 @@ public class GameScreen extends Menu {
         track = new Track();
         for (Block block : track.grid) {
             sceneManager.addScene(block.getScene());
-            btCollisionShape shape = Bullet.obtainStaticNodeShape(block.getScene().modelInstance.nodes);
-            shape.setMargin(0f);
-            btRigidBody.btRigidBodyConstructionInfo sceneInfo = new btRigidBody.btRigidBodyConstructionInfo(0, null, shape, Vector3.Zero);
-            btRigidBody sceneBody = new btRigidBody(sceneInfo);
-            sceneBody.setWorldTransform(block.getScene().modelInstance.transform);
-            physicsSystem.getDynamicsWorld().addRigidBody(sceneBody);
+            if (block.hasCollision()) {
+                btCollisionShape shape = Bullet.obtainStaticNodeShape(block.getScene().modelInstance.nodes);
+                shape.setMargin(0f);
+                btRigidBody.btRigidBodyConstructionInfo sceneInfo = new btRigidBody.btRigidBodyConstructionInfo(0, null, shape, Vector3.Zero);
+                btRigidBody sceneBody = new btRigidBody(sceneInfo);
+                sceneBody.setWorldTransform(block.getScene().modelInstance.transform);
+                sceneBody.setFriction(block.getFriction()); //! 0.5 is default
+                physicsSystem.getDynamicsWorld().addRigidBody(sceneBody);
+            }
         }
 
         car = new Car(this);
@@ -120,7 +123,7 @@ public class GameScreen extends Menu {
 
         Table table = new Table();
         table.setFillParent(true);
-        table.setDebug(true);
+        //TODO: table.setDebug(true);
         stage.addActor(table);
 
         resize = (width, height) -> {

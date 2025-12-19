@@ -19,7 +19,7 @@ public class Track {
 
     public Track() {
         load();
-        for (int i = -10; i <= 10; i++) grid.add(new Block(getBlock(Blocks.ROAD_STRAIGHT), new Vector3(0, 0, i * 32)));
+        for (int i = -10; i <= 10; i++) grid.add(new Block(this, Blocks.ROAD_STRAIGHT, new Vector3(0, 0, i)));
     }
 
     public void load() {
@@ -32,7 +32,7 @@ public class Track {
         return Arrays.stream(Blocks.values()).toList();
     }
 
-    private SceneAsset getBlock(Blocks block) {
+    public SceneAsset getBlock(Blocks block) {
         return blocks.get(block);
     }
 
