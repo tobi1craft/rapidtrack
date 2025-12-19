@@ -1,11 +1,7 @@
 package de.tobi1craft.rapidtrack.enums;
 
 public enum Blocks {
-    ROAD_STRAIGHT("road/straight"),
-    ROAD_CURVE("road/curve"),
-    ROAD_T("road/t"),
-    ROAD_CROSS("road/cross");
-
+    ROAD_STRAIGHT("road/straight");
 
     private final String path;
 

@@ -3,14 +3,12 @@ package de.tobi1craft.rapidtrack.ingame;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.graphics.g3d.model.Node;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ObjectIntMap;
+import de.tobi1craft.rapidtrack.RapidTrack;
 import de.tobi1craft.rapidtrack.ingame.physics.CarPhysics;
 import de.tobi1craft.rapidtrack.screens.GameScreen;
-import net.mgsx.gltf.loaders.gltf.GLTFLoader;
+import de.tobi1craft.rapidtrack.util.RTAssetManager;
 import net.mgsx.gltf.scene3d.scene.Scene;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
@@ -23,7 +21,7 @@ public class Car extends InputAdapter {
 
     private final GameScreen screen;
     private final CarPhysics PHYSICS;
-
+    private final RTAssetManager assets = RapidTrack.getInstance().getAssets();
     private final Scene scene;
     private final SceneAsset asset;
     private final Map<Integer, Consumer<Boolean>> keyBindings = new HashMap<>(); //! Verwirrend → erklären
@@ -31,24 +29,18 @@ public class Car extends InputAdapter {
     private float rotation = 0;
     private float speed = 0;
     private float acceleration = 0;
-    private float visualFrontSteerDeg = 0f;
+    private final float visualFrontSteerDeg = 0f;
     private boolean isDrifting = false;
 
 
     public Car(GameScreen screen) {
         this.screen = screen;
 
-        //?! STUCK: SceneAsset asset = RapidTrack.getInstance().getAssets().loadAndGet("models/car.gltf", SceneAsset.class);
-        asset = new GLTFLoader().load(Gdx.files.internal("models/car.gltf"));
+        asset = assets.loadAndGet("models/car.glb", SceneAsset.class);
         scene = new Scene(asset.scene.model, true);
         scene.modelInstance.transform.translate(new Vector3(0.5f, 2f, 0.5f));
 
-
         PHYSICS = new CarPhysics(screen, scene.modelInstance, 500f);
-
-
-        //scene.animationController.setAnimation("drive", -1, 10, null);
-
 
         //TODO: Do this in a menu
         keyBindings.put(Input.Keys.W, (Boolean pressed) -> keyDown.getAndIncrement(Inputs.ACCELERATE, 0, pressed ? 1 : -1));
@@ -63,6 +55,8 @@ public class Car extends InputAdapter {
     }
 
     public void render(float delta) {
+        speed = PHYSICS.getSpeed();
+
         // Input Handling
         ArrayList<Inputs> pressed = new ArrayList<>();
         for (Inputs input : keyDown.keys()) {
@@ -86,15 +80,13 @@ public class Car extends InputAdapter {
         if (pressed.contains(Inputs.RIGHT)) rotation -= isDrifting ? 80f : 50f;
 
 
-
         Gdx.app.debug("Car", "Acceleration: " + acceleration + " | Speed: " + speed);
         PHYSICS.setAcceleration(0.1f * acceleration);
         PHYSICS.setSteering(rotation / 360);
         PHYSICS.render(delta);
 
-        speed = PHYSICS.getSpeed();
 
-
+        /*
         Node wheels = scene.modelInstance.getNode("wheels", true);
         for (Node axle : wheels.getChildren()) {
             //Lenkung
@@ -116,6 +108,7 @@ public class Car extends InputAdapter {
             }
 
         }
+        */
 
         scene.modelInstance.calculateTransforms();
     }
@@ -149,7 +142,7 @@ public class Car extends InputAdapter {
     }
 
     public void dispose() {
-        asset.dispose();
+        assets.unload("models/car.glb");
     }
 
     private enum Inputs {

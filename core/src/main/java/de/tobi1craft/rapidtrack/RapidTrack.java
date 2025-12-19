@@ -119,8 +119,8 @@ public class RapidTrack extends Game {
     @Override
     public void dispose() {
         super.dispose();
+        for (Screen menu : menus.values()) if (menu != null) menu.dispose();
         ResourceManager.getInstance().dispose();
         assets.dispose();
-        for (Screen menu : menus.values()) if (menu != null) menu.dispose();
     }
 }

@@ -1,13 +1,14 @@
 package de.tobi1craft.rapidtrack.ingame.physics;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.physics.bullet.collision.*;
-import com.badlogic.gdx.physics.bullet.dynamics.btDefaultVehicleRaycaster;
-import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle;
-import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.badlogic.gdx.physics.bullet.dynamics.btVehicleRaycaster;
+import com.badlogic.gdx.physics.bullet.collision.Collision;
+import com.badlogic.gdx.physics.bullet.collision.btCompoundShape;
+import com.badlogic.gdx.physics.bullet.collision.btCylinderShape;
+import com.badlogic.gdx.physics.bullet.collision.btMultiSphereShape;
+import com.badlogic.gdx.physics.bullet.dynamics.*;
 import de.tobi1craft.rapidtrack.screens.GameScreen;
 
 public class CarPhysics {
@@ -22,32 +23,56 @@ public class CarPhysics {
         this.modelInstance = modelInstance;
         this.mass = mass;
 
-        BoundingBox boundingBox = new BoundingBox(); //TODO: remove when new model is used
-
-        btRigidBody body = createBody(boundingBox);
+        btRigidBody body = createBody();
         btRaycastVehicle.btVehicleTuning tuning = new btRaycastVehicle.btVehicleTuning();
         btVehicleRaycaster raycaster = new btDefaultVehicleRaycaster(screen.getPhysicsSystem().getDynamicsWorld());
         vehicle = new btRaycastVehicle(tuning, body, raycaster);
         vehicle.setCoordinateSystem(0, 1, 2);
-        Vector3 connectionPoint = new Vector3(0.25f, 0, 0.45f);
+
+        Vector3 frontConnectionPoint = new Vector3(0.7669f, 0.4534f, -2.086f);
+        Vector3 backConnectionPoint = new Vector3(0.7389f, 0.4534f, 1.608f);
         Vector3 wheelDirection = new Vector3(0, -1f, 0);
         Vector3 wheelAxle = new Vector3(1f, 0, 0);
-        float suspensionRestLength = 0.1f;
-        float wheelRadius = boundingBox.getHeight() / 2 + 0.001f;
-        vehicle.addWheel(new Vector3(connectionPoint.x, connectionPoint.y, -connectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
-        vehicle.addWheel(new Vector3(-connectionPoint.x, connectionPoint.y, -connectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
-        vehicle.addWheel(new Vector3(connectionPoint.x, connectionPoint.y, connectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
-        vehicle.addWheel(new Vector3(-connectionPoint.x, connectionPoint.y, connectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
+        float wheelRadius = 0.3297f;
+        float maxSuspensionTravel = 0.1f;
+        float suspensionRestLength = wheelRadius + maxSuspensionTravel + 0.05f;
+
+        vehicle.addWheel(new Vector3(frontConnectionPoint.x, frontConnectionPoint.y, frontConnectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
+        vehicle.addWheel(new Vector3(-frontConnectionPoint.x, frontConnectionPoint.y, frontConnectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, true);
+        vehicle.addWheel(new Vector3(backConnectionPoint.x, backConnectionPoint.y, backConnectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
+        vehicle.addWheel(new Vector3(-backConnectionPoint.x, backConnectionPoint.y, backConnectionPoint.z), wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, false);
+
+        for (int i = 0; i < vehicle.getNumWheels(); i++) {
+            btWheelInfo wheel = vehicle.getWheelInfo(i);
+            wheel.setMaxSuspensionTravelCm(maxSuspensionTravel * 100);
+            wheel.setSuspensionStiffness(20f);
+        }
+
         screen.getPhysicsSystem().getDynamicsWorld().addVehicle(vehicle);
         screen.getPhysicsSystem().getDynamicsWorld().addRigidBody(body);
     }
 
-    private btRigidBody createBody(BoundingBox boundingBox) {
-        modelInstance.calculateBoundingBox(boundingBox);
+    private btRigidBody createBody() {
+        CarMotionState motionState = new CarMotionState(modelInstance.transform);
 
-        CarMotionState motionState = new CarMotionState(modelInstance.transform, boundingBox);
+        float y = 0.15f;
+        float size = 0.2f;
+        Vector3[] positions = {
+            new Vector3(0, y, -3),
+            new Vector3(0.7f, y, 0),
+            new Vector3(-0.7f, y, 0),
+            new Vector3(0, y, 1.5f)};
 
-        btCollisionShape shape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(0.5f));
+        btMultiSphereShape multiSphereShape = new btMultiSphereShape(positions, new float[]{size, size, size, size}, 4);
+
+        btCylinderShape axis = new btCylinderShape(new Vector3(0.3297f, 0.9446f, 0.3297f));
+
+        btCompoundShape shape = new btCompoundShape();
+        shape.addChildShape(new Matrix4(), multiSphereShape);
+        shape.addChildShape(new Matrix4(new Vector3(0, 0.1238f, 1.608f), new Quaternion(Vector3.Z, 90), Vector3.One), axis);
+        shape.addChildShape(new Matrix4(new Vector3(0, 0.1238f, -2.086f), new Quaternion(Vector3.Z, 90), Vector3.One), axis);
+
+        shape.setMargin(0.04f); //! 0.0 is default
 
         Vector3 inertia = new Vector3();
         shape.calculateLocalInertia(mass, inertia);
@@ -56,10 +81,8 @@ public class CarPhysics {
         btRigidBody body = new btRigidBody(info);
 
         body.setActivationState(Collision.DISABLE_DEACTIVATION);
-        //TODO: Friction?! --> Eher friction, weil damping auch Beschleunigungsverhalten verändert
-        //TODO: Massenverteilung / center of mass
-        body.setFriction(0.1f);
 
+        body.setFriction(0.5f); //! 0.5 is default
 
         return body;
     }

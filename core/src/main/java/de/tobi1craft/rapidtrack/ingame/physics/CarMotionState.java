@@ -1,16 +1,13 @@
 package de.tobi1craft.rapidtrack.ingame.physics;
 
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 
 public class CarMotionState extends btMotionState {
     private final Matrix4 transform;
-    private final BoundingBox boundingBox;
 
-    public CarMotionState(Matrix4 transform, BoundingBox boundingBox) {
+    public CarMotionState(Matrix4 transform) {
         this.transform = transform;
-        this.boundingBox = boundingBox;
     }
 
     /**
@@ -30,6 +27,6 @@ public class CarMotionState extends btMotionState {
      */
     @Override
     public void setWorldTransform(Matrix4 worldTrans) {
-        transform.set(worldTrans);//.cpy().translate(0, -boundingBox.getHeight() / 2f, 0)); //TODO: Compound shape --> dann unnötig?
+        transform.set(worldTrans);
     }
 }
