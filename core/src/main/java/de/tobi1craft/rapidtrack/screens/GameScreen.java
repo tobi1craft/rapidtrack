@@ -31,14 +31,16 @@ import de.tobi1craft.rapidtrack.ingame.physics.PhysicsSystem;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
 import net.mgsx.gltf.scene3d.lights.DirectionalLightEx;
+import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 import net.mgsx.gltf.scene3d.scene.SceneSkybox;
 import net.mgsx.gltf.scene3d.utils.IBLBuilder;
 
+import java.util.ArrayList;
+
 public class GameScreen extends Menu {
 
     private final Track track;
-    private final Car car;
     private final SceneManager sceneManager;
     private final PerspectiveCamera camera;
     private final Cubemap diffuseCubemap;
@@ -48,17 +50,19 @@ public class GameScreen extends Menu {
     private final SceneSkybox skybox;
     private final DirectionalLightEx light;
     private final PhysicsSystem physicsSystem;
+    private final ArrayList<Block> finishes = new ArrayList<>();
+    private Car car;
     private CameraController cameraController;
     private boolean drawDebug = false; //TODO: Input handling on this screen for debug and maybe cam switch --> maybe somewhere else
+    private Vector3 startPos = new Vector3();
 
     public GameScreen() {
         setupStage();
-
         physicsSystem = new PhysicsSystem();
-
         sceneManager = new SceneManager();
 
         track = new Track();
+
         for (Block block : track.grid) {
             sceneManager.addScene(block.getScene());
             if (block.hasCollision()) {
@@ -70,9 +74,12 @@ public class GameScreen extends Menu {
                 sceneBody.setFriction(block.getFriction()); //! 0.5 is default
                 physicsSystem.getDynamicsWorld().addRigidBody(sceneBody);
             }
+            if (block.isStart()) startPos = block.getGridPos();
+            if (block.isFinish()) finishes.add(block);
         }
 
-        car = new Car(this);
+        assets.loadAndGet("models/car.glb", SceneAsset.class); //TODO: global loading screen
+        car = new Car(this, startPos, finishes);
         sceneManager.addScene(car.getScene());
 
 
@@ -80,6 +87,7 @@ public class GameScreen extends Menu {
         camera = new PerspectiveCamera(60f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.near = 0.2f;
         camera.far = 1000;
+        camera.position.set(startPos.cpy().scl(Track.SCALE).add(0, 3, 5));
         sceneManager.setCamera(camera);
 
         if (drawDebug) physicsSystem.render(camera);
@@ -110,8 +118,14 @@ public class GameScreen extends Menu {
         // setup skybox
         skybox = new SceneSkybox(environmentCubemap);
         sceneManager.setSkyBox(skybox);
+    }
 
-
+    private void reset() {
+        sceneManager.removeScene(car.getScene());
+        car.dispose();
+        car = new Car(this, startPos, finishes);
+        sceneManager.addScene(car.getScene());
+        if (cameraController instanceof Cam1) cameraController = new Cam1(camera, car);
     }
 
     public PhysicsSystem getPhysicsSystem() {
@@ -157,6 +171,7 @@ public class GameScreen extends Menu {
             else cameraController = new Cam1(camera, car);
             show();
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.FORWARD_DEL)) reset();
 
         car.render(delta);
 
@@ -191,6 +206,7 @@ public class GameScreen extends Menu {
         environmentCubemap.dispose();
         skybox.dispose();
         car.dispose();
+        assets.unload("models/car.glb");
         super.dispose();
     }
 }

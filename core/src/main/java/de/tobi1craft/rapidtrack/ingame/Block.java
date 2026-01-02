@@ -11,6 +11,7 @@ public class Block {
     private boolean isStart = false;
     private boolean isFinish = false;
     private boolean hasCollision = true;
+    //TODO: Orientation
 
     public Block(Track track, Blocks block, Vector3 gridPosition) {
         gridPos = gridPosition;
@@ -24,7 +25,11 @@ public class Block {
             case Blocks.Props.NO_COLLISION -> hasCollision = false;
         }
 
-        scene.modelInstance.transform.setTranslation(this.gridPos.cpy().scl(32, 8, 32));
+        scene.modelInstance.transform.setTranslation(this.gridPos.cpy().scl(Track.SCALE));
+    }
+
+    public Vector3 getGridPos() {
+        return gridPos;
     }
 
     public Scene getScene() {
@@ -33,6 +38,14 @@ public class Block {
 
     public float getFriction() {
         return friction;
+    }
+
+    public boolean isStart() {
+        return isStart;
+    }
+
+    public boolean isFinish() {
+        return isFinish;
     }
 
     public boolean hasCollision() {

@@ -18,6 +18,8 @@ public class FreeCam extends CameraController {
     private float speed = 15f;
 
 
+    @SuppressWarnings("SuspiciousNameCombination")
+    //atan2Deg parameters are in the right order, but not according to variable naming
     public FreeCam(Camera camera) {
         this.camera = camera;
         // Init yaw and pitch from the current camera direction

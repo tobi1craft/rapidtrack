@@ -10,6 +10,9 @@ import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.badlogic.gdx.utils.Disposable;
+import de.tobi1craft.rapidtrack.ingame.Car;
+
+import java.util.Map;
 
 public class PhysicsSystem implements Disposable {
     /**
@@ -59,6 +62,8 @@ public class PhysicsSystem implements Disposable {
 
     public void render(Camera camera) {
         debugDrawer.begin(camera);
+        for (Map.Entry<Vector3, Vector3> entry : Car.raycasts.entrySet())
+            debugDrawer.drawLine(entry.getKey(), entry.getValue(), new Vector3(1, 0, 1));
         dynamicsWorld.debugDrawWorld();
         debugDrawer.end();
     }

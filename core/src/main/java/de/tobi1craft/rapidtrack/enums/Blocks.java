@@ -1,7 +1,9 @@
 package de.tobi1craft.rapidtrack.enums;
 
 public enum Blocks {
-    ROAD_STRAIGHT("road/straight");
+    ROAD_STRAIGHT("road/straight"),
+    ROAD_START("road/straight", Props.START),
+    ROAD_FINISH("road/straight", Props.FINISH);
 
     private final String path;
     private float friction = 0.5f;

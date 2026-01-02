@@ -13,19 +13,22 @@ import de.tobi1craft.rapidtrack.screens.GameScreen;
 
 public class CarPhysics {
 
+    public final btRigidBody body;
     private final btRaycastVehicle vehicle;
     private final float mass;
     private final ModelInstance modelInstance;
+    private final btDynamicsWorld dynamicsWorld;
     private float acceleration = 0;
 
 
     public CarPhysics(GameScreen screen, ModelInstance modelInstance, float mass) {
         this.modelInstance = modelInstance;
         this.mass = mass;
+        dynamicsWorld = screen.getPhysicsSystem().getDynamicsWorld();
 
-        btRigidBody body = createBody();
+        body = createBody();
         btRaycastVehicle.btVehicleTuning tuning = new btRaycastVehicle.btVehicleTuning();
-        btVehicleRaycaster raycaster = new btDefaultVehicleRaycaster(screen.getPhysicsSystem().getDynamicsWorld());
+        btVehicleRaycaster raycaster = new btDefaultVehicleRaycaster(dynamicsWorld);
         vehicle = new btRaycastVehicle(tuning, body, raycaster);
         vehicle.setCoordinateSystem(0, 1, 2);
 
@@ -50,6 +53,8 @@ public class CarPhysics {
 
         screen.getPhysicsSystem().getDynamicsWorld().addVehicle(vehicle);
         screen.getPhysicsSystem().getDynamicsWorld().addRigidBody(body);
+        dynamicsWorld.addVehicle(vehicle);
+        dynamicsWorld.addRigidBody(body);
     }
 
     private btRigidBody createBody() {
@@ -106,5 +111,12 @@ public class CarPhysics {
         vehicle.applyEngineForce(acceleration * mass, 1);
         vehicle.applyEngineForce(acceleration * mass, 2);
         vehicle.applyEngineForce(acceleration * mass, 3);
+    }
+
+    public void dispose() {
+        dynamicsWorld.removeRigidBody(body);
+        dynamicsWorld.removeVehicle(vehicle);
+        body.dispose();
+        vehicle.dispose();
     }
 }

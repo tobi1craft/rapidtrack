@@ -13,13 +13,17 @@ import java.util.List;
 public class Track {
     //TODO: - Map/List = blocks;
 
+    public static final Vector3 SCALE = new Vector3(32, 8, 32);
+
     public final List<Block> grid = new ArrayList<>();
     //? EnumMap -> Map aber nur ein Enum für alle möglichen Keys
     private final java.util.Map<Blocks, SceneAsset> blocks = new EnumMap<>(Blocks.class);
 
     public Track() {
         load();
+        grid.add(new Block(this, Blocks.ROAD_START, new Vector3(0, 0, 11)));
         for (int i = -10; i <= 10; i++) grid.add(new Block(this, Blocks.ROAD_STRAIGHT, new Vector3(0, 0, i)));
+        grid.add(new Block(this, Blocks.ROAD_FINISH, new Vector3(0, 0, -11)));
     }
 
     public void load() {
