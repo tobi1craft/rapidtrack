@@ -3,6 +3,9 @@ package de.tobi1craft.rapidtrack.ingame;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.graphics.g3d.model.Node;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.AllHitsRayResultCallback;
@@ -35,7 +38,7 @@ public class Car extends InputAdapter {
     private float rotation = 0;
     private float speed = 0;
     private float acceleration = 0;
-    private final float visualFrontSteerDeg = 0f;
+    private float visualFrontSteerDeg = 0f;
     private boolean isDrifting = false;
 
     public Car(GameScreen screen, Vector3 blockPos, ArrayList<Block> finishes) {
@@ -89,39 +92,30 @@ public class Car extends InputAdapter {
         else if (pressed.contains(Inputs.ACCELERATE)) acceleration += pressed.contains(Inputs.BRAKE) ? 1f : 3f;
         else acceleration += pressed.contains(Inputs.BRAKE) ? -2f : 0f; //! 0 bei release, wegen air resistance
 
-        if (pressed.contains(Inputs.LEFT)) rotation += isDrifting ? 80f : 50f;
-        if (pressed.contains(Inputs.RIGHT)) rotation -= isDrifting ? 80f : 50f;
+        if (pressed.contains(Inputs.LEFT)) rotation += isDrifting ? 80f : 30f;
+        if (pressed.contains(Inputs.RIGHT)) rotation -= isDrifting ? 80f : 30f;
 
 
         Gdx.app.debug("Car", "Acceleration: " + acceleration + " | Speed: " + speed);
         PHYSICS.setAcceleration(0.3f * acceleration);
-        PHYSICS.setSteering(rotation / 360);
+        PHYSICS.setSteering(rotation * MathUtils.degreesToRadians);
         PHYSICS.update(delta);
 
 
-        /*
-        Node wheels = scene.modelInstance.getNode("wheels", true);
-        for (Node axle : wheels.getChildren()) {
-            //Lenkung
-            if (axle.id.equals("front_wheels")) {
+        float alpha = 1f - (float) Math.exp(-12f * delta);
+        // Smooth toward target steering angle (degrees)
+        visualFrontSteerDeg = MathUtils.lerp(visualFrontSteerDeg, Math.max(Math.min(this.rotation, 30), -30), alpha);
 
-                float alpha = 1f - (float) Math.exp(-12f * delta);
-                // Smooth toward target steering angle (degrees)
-                visualFrontSteerDeg = MathUtils.lerp(visualFrontSteerDeg, Math.max(Math.min(this.rotation, 50), -50), alpha);
-
-                for (Node wheel : axle.getChildren()) {
-                    wheel.rotation.setFromAxis(Vector3.Y, visualFrontSteerDeg).nor();
-                }
-            }
-
-            //Räder vorwärts/rückwärts drehen
-            for (Node wheel : axle.getChildren()) {
-                wheel.getChild(0).rotation.mul(new Quaternion().setFromAxis(Vector3.X, 2.0f * speed)).nor();
-                //TODO: Drehgeschwindigkeit abhängig von delta und passend zur Radgröße
-            }
-
+        for (String wheel : new String[]{"Axle_FL", "Axle_FR"}) {
+            Node node = scene.modelInstance.getNode(wheel, true);
+            node.rotation.setFromAxis(Vector3.Y, visualFrontSteerDeg).nor();
         }
-        */
+
+        for (String wheel : new String[]{"Wheel_FL", "Wheel_FR", "Rear_Axle"}) {
+            Node node = scene.modelInstance.getNode(wheel, true);
+            node.rotation.mul(new Quaternion().setFromAxis(Vector3.X, 0.025f * speed)).nor();
+            //TODO: Drehgeschwindigkeit abhängig von delta und passend zur Radgröße
+        }
 
         scene.modelInstance.calculateTransforms();
     }
