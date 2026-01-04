@@ -11,17 +11,14 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import de.tobi1craft.rapidtrack.RapidTrack;
 import de.tobi1craft.rapidtrack.ResourceManager;
 import de.tobi1craft.rapidtrack.UI;
 import de.tobi1craft.rapidtrack.bullet.camera.CameraController;
-import de.tobi1craft.rapidtrack.enums.Screens;
 import de.tobi1craft.rapidtrack.ingame.Block;
 import de.tobi1craft.rapidtrack.ingame.Car;
 import de.tobi1craft.rapidtrack.ingame.Track;
@@ -51,10 +48,19 @@ public class GameScreen extends Menu {
     private final DirectionalLightEx light;
     private final PhysicsSystem physicsSystem;
     private final ArrayList<Block> finishes = new ArrayList<>();
+    private final InputMultiplexer inputMultiplexer = new InputMultiplexer();
     private Car car;
     private CameraController cameraController;
     private boolean drawDebug = false; //TODO: Input handling on this screen for debug and maybe cam switch --> maybe somewhere else
     private Vector3 startPos = new Vector3();
+    private long startTimestamp = System.nanoTime(); //TODO
+    private long pauseTimestamp;
+    private long finishTime;
+    private Label timeLabel;
+    private boolean paused;
+    private long pb;
+    private String pbText;
+    private Label pbLabel;
 
     public GameScreen() {
         setupStage();
@@ -70,6 +76,7 @@ public class GameScreen extends Menu {
                 shape.setMargin(0f);
                 btRigidBody.btRigidBodyConstructionInfo sceneInfo = new btRigidBody.btRigidBodyConstructionInfo(0, null, shape, Vector3.Zero);
                 btRigidBody sceneBody = new btRigidBody(sceneInfo);
+                sceneInfo.dispose();
                 sceneBody.setWorldTransform(block.getScene().modelInstance.transform);
                 sceneBody.setFriction(block.getFriction()); //! 0.5 is default
                 physicsSystem.getDynamicsWorld().addRigidBody(sceneBody);
@@ -120,12 +127,70 @@ public class GameScreen extends Menu {
         sceneManager.setSkyBox(skybox);
     }
 
+    private static String formatTime(long time) {
+        long totalMillis = TimeUtils.nanosToMillis(time);
+
+        int hours = (int) (totalMillis / 3600000);
+        int minutes = (int) ((totalMillis % 3600000) / 60000);
+        int seconds = (int) ((totalMillis % 60000) / 1000);
+        int millis = (int) (totalMillis % 1000);
+
+        StringBuilder builder = new StringBuilder();
+        if (hours > 0) {
+            builder.append(hours).append(":").append(String.format("%02d:", minutes)).append(String.format("%02d", seconds));
+        } else if (minutes > 0) {
+            builder.append(minutes).append(":").append(String.format("%02d", seconds));
+        } else {
+            builder.append(seconds);
+        }
+        builder.append(String.format(".%03d", millis));
+        return builder.toString();
+    }
+
+    @Override
+    public void pause() {
+        paused = true;
+        pauseTimestamp = System.nanoTime();
+        super.pause();
+    }
+
+    @Override
+    public void resume() {
+        startTimestamp += System.nanoTime() - pauseTimestamp;
+        pauseTimestamp = 0;
+        paused = false;
+        super.resume();
+    }
+
+    private long timer() {
+        return System.nanoTime() - startTimestamp;
+    }
+
+    public void finish() {
+        finishTime = timer();
+        if (pb == 0 || pb > finishTime) {
+            pb = finishTime;
+            pbText = formatTime(pb);
+        }
+
+        reset();
+    }
+
     private void reset() {
         sceneManager.removeScene(car.getScene());
+        inputMultiplexer.removeProcessor(car);
         car.dispose();
         car = new Car(this, startPos, finishes);
         sceneManager.addScene(car.getScene());
-        if (cameraController instanceof Cam1) cameraController = new Cam1(camera, car);
+        inputMultiplexer.addProcessor(2, car);
+        camera.position.set(startPos.cpy().scl(Track.SCALE).add(0, 3, 5));
+        if (cameraController instanceof Cam1) {
+            inputMultiplexer.removeProcessor(cameraController);
+            cameraController = new Cam1(camera, car);
+            inputMultiplexer.addProcessor(0, cameraController);
+        }
+        finishTime = 0;
+        startTimestamp = System.nanoTime();
     }
 
     public PhysicsSystem getPhysicsSystem() {
@@ -137,68 +202,64 @@ public class GameScreen extends Menu {
 
         Table table = new Table();
         table.setFillParent(true);
-        //TODO: table.setDebug(true);
         stage.addActor(table);
 
         resize = (width, height) -> {
             table.clearChildren();
 
-            TextButton button = UI.getLiteralTextButton(height * 0.15f, "hi");
-            table.add(button).expandX();
+            pbLabel = UI.getLiteralLabel(height * 0.1f, "", Color.WHITE);
+            table.add(pbLabel).expandY().expandX().top().right().pad(height * 0.02f).row();
 
-            table.add().expandX();
-            table.add().expandX();
-
-            // start the game when the button is clicked
-            button.addListener(new ChangeListener() {
-                public void changed(ChangeEvent event, Actor actor) {
-                    RapidTrack.getInstance().setScreen(Screens.GAME);
-                }
-            });
-
+            timeLabel = UI.getLiteralLabel(height * 0.1f, "", Color.WHITE);
+            table.add(timeLabel).expandY().bottom().pad(height * 0.02f);
 
             sceneManager.updateViewport(width, height);
-
-
         };
     }
 
     @Override
     public void render(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) drawDebug = !drawDebug;
-        if (Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
-            if (cameraController instanceof Cam1) cameraController = new FreeCam(camera);
-            else cameraController = new Cam1(camera, car);
-            show();
-        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F5)) switchCamera();
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.FORWARD_DEL)) reset();
 
-        car.render(delta);
+        if (!paused) {
+            car.update(delta);
+            cameraController.update(delta);
+            physicsSystem.update(delta);
 
+            if (finishTime == 0 && pauseTimestamp == 0) timeLabel.setText(formatTime(timer()));
+            if (pbText != null && !pbLabel.textEquals("PB: " + pbText)) pbLabel.setText("PB: " + pbText);
+        }
         sceneManager.update(delta);
         sceneManager.render();
-
-        physicsSystem.update(delta);
-
-        // Keep camera controller in sync (movement/rotation)
-        cameraController.update(delta);
 
         if (drawDebug) physicsSystem.render(camera);
 
         super.render(delta); //Rendert hauptsächlich die Stage
     }
 
+    private void switchCamera() {
+        inputMultiplexer.removeProcessor(cameraController);
+
+        if (cameraController instanceof Cam1) cameraController = new FreeCam(camera);
+        else cameraController = new Cam1(camera, car);
+
+        inputMultiplexer.addProcessor(0, cameraController);
+    }
+
     @Override
     public void show() {
-        InputMultiplexer multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(cameraController);
-        multiplexer.addProcessor(car);
-        multiplexer.addProcessor(stage);
-        Gdx.input.setInputProcessor(multiplexer);
+        inputMultiplexer.addProcessor(0, cameraController);
+        inputMultiplexer.addProcessor(1, stage);
+        inputMultiplexer.addProcessor(2, car);
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     @Override
     public void dispose() {
+        physicsSystem.dispose();
         sceneManager.dispose();
         brdfLUT.dispose();
         diffuseCubemap.dispose();

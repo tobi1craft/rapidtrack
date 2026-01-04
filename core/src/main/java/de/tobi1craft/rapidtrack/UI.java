@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.I18NBundle;
@@ -39,10 +40,10 @@ public class UI {
     }
 
     public static TextButton getTextButton(float height, String text, Object... formats) {
-        return getTextButton(height, text, Color.WHITE, formats);
+        return getTextButton(height, Color.WHITE, text, formats);
     }
 
-    public static TextButton getTextButton(float height, String text, Color color, Object... formats) {
+    public static TextButton getTextButton(float height, Color color, String text, Object... formats) {
         return getLiteralTextButton(height, lang.format(text, formats), color);
     }
 
@@ -53,5 +54,13 @@ public class UI {
         TextButton button = new TextButton(text, style);
         button.setHeight(height);
         return button;
+    }
+
+    public static Label getLiteralLabel(float height, String text, Color color) {
+        Label.LabelStyle style = ResourceManager.getInstance().getSkin().get(Label.LabelStyle.class);
+        style.font = getFont((int) (height / 1.618f), color);
+        Label label = new Label(text, style);
+        label.setHeight(height);
+        return label;
     }
 }

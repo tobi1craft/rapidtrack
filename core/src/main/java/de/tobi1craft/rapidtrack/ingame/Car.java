@@ -62,7 +62,7 @@ public class Car extends InputAdapter {
         return scene;
     }
 
-    public void render(float delta) {
+    public void update(float delta) {
         speed = PHYSICS.getSpeed();
 
         // Input Handling
@@ -72,7 +72,10 @@ public class Car extends InputAdapter {
             pressed.add(input);
         }
 
-        if (checkForFinish()) Gdx.app.debug("Car", "Finished!");
+        if (checkForFinish()) {
+            screen.finish();
+            return;
+        }
 
         acceleration = 0;//-0.5f * Math.signum(speed) * (float) Math.sqrt(Math.abs(speed)); //! Default air friction
         rotation = 0;
@@ -91,9 +94,9 @@ public class Car extends InputAdapter {
 
 
         Gdx.app.debug("Car", "Acceleration: " + acceleration + " | Speed: " + speed);
-        PHYSICS.setAcceleration(0.1f * acceleration);
+        PHYSICS.setAcceleration(0.3f * acceleration);
         PHYSICS.setSteering(rotation / 360);
-        PHYSICS.render(delta);
+        PHYSICS.update(delta);
 
 
         /*
@@ -178,7 +181,7 @@ public class Car extends InputAdapter {
 
     public void dispose() {
         PHYSICS.dispose();
-
+        raycastCallback.dispose();
     }
 
     private enum Inputs {

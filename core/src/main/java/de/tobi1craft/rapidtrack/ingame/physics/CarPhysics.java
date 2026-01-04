@@ -18,6 +18,8 @@ public class CarPhysics {
     private final float mass;
     private final ModelInstance modelInstance;
     private final btDynamicsWorld dynamicsWorld;
+    private final btVehicleRaycaster raycaster;
+    private final btRaycastVehicle.btVehicleTuning tuning;
     private float acceleration = 0;
 
 
@@ -27,8 +29,8 @@ public class CarPhysics {
         dynamicsWorld = screen.getPhysicsSystem().getDynamicsWorld();
 
         body = createBody();
-        btRaycastVehicle.btVehicleTuning tuning = new btRaycastVehicle.btVehicleTuning();
-        btVehicleRaycaster raycaster = new btDefaultVehicleRaycaster(dynamicsWorld);
+        tuning = new btRaycastVehicle.btVehicleTuning();
+        raycaster = new btDefaultVehicleRaycaster(dynamicsWorld);
         vehicle = new btRaycastVehicle(tuning, body, raycaster);
         vehicle.setCoordinateSystem(0, 1, 2);
 
@@ -84,6 +86,7 @@ public class CarPhysics {
 
         btRigidBody.btRigidBodyConstructionInfo info = new btRigidBody.btRigidBodyConstructionInfo(mass, motionState, shape, inertia);
         btRigidBody body = new btRigidBody(info);
+        info.dispose();
 
         body.setActivationState(Collision.DISABLE_DEACTIVATION);
 
@@ -106,6 +109,7 @@ public class CarPhysics {
     }
 
     public void render(float delta) {
+    public void update(float delta) {
         vehicle.updateVehicle(delta);
         vehicle.applyEngineForce(acceleration * mass, 0);
         vehicle.applyEngineForce(acceleration * mass, 1);
@@ -118,5 +122,7 @@ public class CarPhysics {
         dynamicsWorld.removeVehicle(vehicle);
         body.dispose();
         vehicle.dispose();
+        raycaster.dispose();
+        tuning.dispose();
     }
 }
