@@ -14,6 +14,10 @@ public class Block {
     //TODO: Orientation
 
     public Block(Track track, Blocks block, Vector3 gridPosition) {
+        this(track, block, gridPosition, 0);
+    }
+
+    public Block(Track track, Blocks block, Vector3 gridPosition, int rotationDegrees) {
         gridPos = gridPosition;
         scene = new Scene(track.getBlock(block).scene);
         friction = block.getFriction();
@@ -26,6 +30,7 @@ public class Block {
         }
 
         scene.modelInstance.transform.setTranslation(this.gridPos.cpy().scl(Track.SCALE));
+        scene.modelInstance.transform.rotate(Vector3.Y, rotationDegrees);
     }
 
     public Vector3 getGridPos() {
