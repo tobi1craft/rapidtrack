@@ -28,6 +28,7 @@ public abstract class Menu implements Screen {
 
     @Override
     public void resize(int width, int height) {
+        if (width == 0 || height == 0) return; //! minimiertes Fenster
         if (stage != null) stage.getViewport().update(width, height, true);
         resize.accept(width, height);
     }
