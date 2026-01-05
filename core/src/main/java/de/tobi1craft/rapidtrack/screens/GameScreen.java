@@ -21,6 +21,7 @@ import de.tobi1craft.rapidtrack.UI;
 import de.tobi1craft.rapidtrack.bullet.camera.CameraController;
 import de.tobi1craft.rapidtrack.ingame.Block;
 import de.tobi1craft.rapidtrack.ingame.Car;
+import de.tobi1craft.rapidtrack.ingame.InputManager;
 import de.tobi1craft.rapidtrack.ingame.Track;
 import de.tobi1craft.rapidtrack.ingame.camera.Cam1;
 import de.tobi1craft.rapidtrack.ingame.camera.FreeCam;
@@ -49,9 +50,10 @@ public class GameScreen extends Menu {
     private final PhysicsSystem physicsSystem;
     private final ArrayList<Block> finishes = new ArrayList<>();
     private final InputMultiplexer inputMultiplexer = new InputMultiplexer();
+    public InputManager inputManager;
     private Car car;
     private CameraController cameraController;
-    private boolean drawDebug = false; //TODO: Input handling on this screen for debug and maybe cam switch --> maybe somewhere else
+    private boolean drawDebug = false;
     private Vector3 startPos = new Vector3();
     private long startTimestamp = System.nanoTime(); //TODO
     private long pauseTimestamp;
@@ -66,6 +68,7 @@ public class GameScreen extends Menu {
         setupStage();
         physicsSystem = new PhysicsSystem();
         sceneManager = new SceneManager();
+        inputManager = new InputManager();
 
         track = new Track();
 
@@ -178,11 +181,9 @@ public class GameScreen extends Menu {
 
     private void reset() {
         sceneManager.removeScene(car.getScene());
-        inputMultiplexer.removeProcessor(car);
         car.dispose();
         car = new Car(this, startPos, finishes);
         sceneManager.addScene(car.getScene());
-        inputMultiplexer.addProcessor(2, car);
         camera.position.set(startPos.cpy().scl(Track.SCALE).add(0, 3, 5));
         if (cameraController instanceof Cam1) {
             inputMultiplexer.removeProcessor(cameraController);
@@ -243,8 +244,13 @@ public class GameScreen extends Menu {
     private void switchCamera() {
         inputMultiplexer.removeProcessor(cameraController);
 
-        if (cameraController instanceof Cam1) cameraController = new FreeCam(camera);
-        else cameraController = new Cam1(camera, car);
+        if (cameraController instanceof Cam1) {
+            cameraController = new FreeCam(camera);
+            inputManager.unfocus();
+        } else {
+            cameraController = new Cam1(camera, car);
+            inputManager.refocus();
+        }
 
         inputMultiplexer.addProcessor(0, cameraController);
     }
@@ -253,7 +259,7 @@ public class GameScreen extends Menu {
     public void show() {
         inputMultiplexer.addProcessor(0, cameraController);
         inputMultiplexer.addProcessor(1, stage);
-        inputMultiplexer.addProcessor(2, car);
+        inputMultiplexer.addProcessor(2, inputManager);
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 

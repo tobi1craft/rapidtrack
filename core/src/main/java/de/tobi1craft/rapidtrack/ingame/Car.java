@@ -1,8 +1,6 @@
 package de.tobi1craft.rapidtrack.ingame;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
@@ -10,7 +8,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.AllHitsRayResultCallback;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectConstArray;
-import com.badlogic.gdx.utils.ObjectIntMap;
 import de.tobi1craft.rapidtrack.RapidTrack;
 import de.tobi1craft.rapidtrack.ingame.physics.CarPhysics;
 import de.tobi1craft.rapidtrack.screens.GameScreen;
@@ -20,10 +17,8 @@ import net.mgsx.gltf.scene3d.scene.SceneAsset;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
 
-public class Car extends InputAdapter {
+public class Car {
 
     public static HashMap<Vector3, Vector3> raycasts = new HashMap<>();
     private final GameScreen screen;
@@ -32,8 +27,6 @@ public class Car extends InputAdapter {
     private final RTAssetManager assets = RapidTrack.getInstance().getAssets();
     private final Scene scene;
     private final SceneAsset asset;
-    private final Map<Integer, Consumer<Boolean>> keyBindings = new HashMap<>(); //! Verwirrend → erklären
-    private final ObjectIntMap<Inputs> keyDown = new ObjectIntMap<>(); //! Integer anstatt Boolean als Value wegen reference counting; ObjectIntMap für increment Methode
     private final AllHitsRayResultCallback raycastCallback;
     private float rotation = 0;
     private float speed = 0;
@@ -52,13 +45,6 @@ public class Car extends InputAdapter {
         PHYSICS = new CarPhysics(screen, scene.modelInstance, 500f);
 
         raycastCallback = new AllHitsRayResultCallback(new Vector3(), new Vector3());
-
-        //TODO: Do this in a menu
-        keyBindings.put(Input.Keys.W, (Boolean pressed) -> keyDown.getAndIncrement(Inputs.ACCELERATE, 0, pressed ? 1 : -1));
-        keyBindings.put(Input.Keys.A, (Boolean pressed) -> keyDown.getAndIncrement(Inputs.LEFT, 0, pressed ? 1 : -1));
-        keyBindings.put(Input.Keys.S, (Boolean pressed) -> keyDown.getAndIncrement(Inputs.BRAKE, 0, pressed ? 1 : -1));
-        keyBindings.put(Input.Keys.D, (Boolean pressed) -> keyDown.getAndIncrement(Inputs.RIGHT, 0, pressed ? 1 : -1));
-        keyBindings.put(Input.Keys.SPACE, (Boolean pressed) -> keyDown.getAndIncrement(Inputs.BRAKE, 0, pressed ? 1 : -1));
     }
 
     public Scene getScene() {
@@ -67,13 +53,6 @@ public class Car extends InputAdapter {
 
     public void update(float delta) {
         speed = PHYSICS.getSpeed();
-
-        // Input Handling
-        ArrayList<Inputs> pressed = new ArrayList<>();
-        for (Inputs input : keyDown.keys()) {
-            if (keyDown.get(input, 0) == 0) continue;
-            pressed.add(input);
-        }
 
         if (checkForFinish()) {
             screen.finish();
@@ -84,16 +63,18 @@ public class Car extends InputAdapter {
         rotation = 0;
 
         //Is Drifting? Only forwards TODO: movement in other direction than the car is looking
-        if (pressed.contains(Inputs.BRAKE)) {
-            isDrifting = speed > 0 && (pressed.contains(Inputs.LEFT) || pressed.contains(Inputs.RIGHT));
+        if (screen.inputManager.isKeyDown(InputManager.Inputs.BRAKE)) {
+            isDrifting = speed > 0 && (screen.inputManager.isKeyDown(InputManager.Inputs.LEFT) || screen.inputManager.isKeyDown(InputManager.Inputs.RIGHT));
         } else isDrifting = false;
 
-        if (isDrifting) acceleration += pressed.contains(Inputs.ACCELERATE) ? -0.5f : -2f;
-        else if (pressed.contains(Inputs.ACCELERATE)) acceleration += pressed.contains(Inputs.BRAKE) ? 1f : 3f;
-        else acceleration += pressed.contains(Inputs.BRAKE) ? -2f : 0f; //! 0 bei release, wegen air resistance
+        if (isDrifting) acceleration += screen.inputManager.isKeyDown(InputManager.Inputs.ACCELERATE) ? -0.5f : -2f;
+        else if (screen.inputManager.isKeyDown(InputManager.Inputs.ACCELERATE))
+            acceleration += screen.inputManager.isKeyDown(InputManager.Inputs.BRAKE) ? 1f : 3f;
+        else
+            acceleration += screen.inputManager.isKeyDown(InputManager.Inputs.BRAKE) ? -2f : 0f; //! 0 bei release, wegen air resistance
 
-        if (pressed.contains(Inputs.LEFT)) rotation += isDrifting ? 80f : 30f;
-        if (pressed.contains(Inputs.RIGHT)) rotation -= isDrifting ? 80f : 30f;
+        if (screen.inputManager.isKeyDown(InputManager.Inputs.LEFT)) rotation += isDrifting ? 80f : 30f;
+        if (screen.inputManager.isKeyDown(InputManager.Inputs.RIGHT)) rotation -= isDrifting ? 80f : 30f;
 
 
         Gdx.app.debug("Car", "Acceleration: " + acceleration + " | Speed: " + speed);
@@ -146,24 +127,6 @@ public class Car extends InputAdapter {
         return false;
     }
 
-    @Override
-    public boolean keyDown(int keycode) {
-        if (keyBindings.containsKey(keycode)) {
-            keyBindings.get(keycode).accept(true);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        if (keyBindings.containsKey(keycode)) {
-            keyBindings.get(keycode).accept(false);
-            return true;
-        }
-        return false;
-    }
-
 
     public Vector3 getPosition() {
         return scene.modelInstance.transform.getTranslation(new Vector3());
@@ -176,9 +139,5 @@ public class Car extends InputAdapter {
     public void dispose() {
         PHYSICS.dispose();
         raycastCallback.dispose();
-    }
-
-    private enum Inputs {
-        LEFT, RIGHT, ACCELERATE, BRAKE
     }
 }
