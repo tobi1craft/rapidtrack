@@ -3,10 +3,13 @@ package de.tobi1craft.rapidtrack.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cubemap;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
@@ -26,9 +29,11 @@ import de.tobi1craft.rapidtrack.ingame.Track;
 import de.tobi1craft.rapidtrack.ingame.camera.Cam1;
 import de.tobi1craft.rapidtrack.ingame.camera.FreeCam;
 import de.tobi1craft.rapidtrack.ingame.physics.PhysicsSystem;
+import net.mgsx.gltf.scene3d.attributes.PBRColorAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
 import net.mgsx.gltf.scene3d.lights.DirectionalLightEx;
+import net.mgsx.gltf.scene3d.scene.Scene;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 import net.mgsx.gltf.scene3d.scene.SceneSkybox;
@@ -63,6 +68,7 @@ public class GameScreen extends Menu {
     private long pb;
     private String pbText;
     private Label pbLabel;
+    private Model finishWallModel;
 
     public GameScreen() {
         setupStage();
@@ -87,6 +93,7 @@ public class GameScreen extends Menu {
             if (block.isStart()) startPos = block.getGridPos();
             if (block.isFinish()) finishes.add(block);
         }
+        createFinishWalls();
 
         assets.loadAndGet("models/car.glb", SceneAsset.class); //TODO: global loading screen
         car = new Car(this, startPos, finishes);
@@ -148,6 +155,38 @@ public class GameScreen extends Menu {
         }
         builder.append(String.format(".%03d", millis));
         return builder.toString();
+    }
+
+    private void createFinishWalls() {
+        ModelBuilder builder = new ModelBuilder();
+
+
+        Material material = new Material();
+        material.set(PBRColorAttribute.createBaseColorFactor(new Color(1, 0, 0, 0.2f)));
+        material.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA));
+        material.set(IntAttribute.createCullFace(0)); //! Von beiden Seiten sichtbar
+
+        float x = Track.SCALE.x / 2;
+        float y = Track.SCALE.y;
+
+        finishWallModel = builder.createRect(
+            -x, 0, 0,
+            -x, y, 0,
+            x, y, 0,
+            x, 0, 0,
+            0, 0, 1,
+            material,
+            VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal
+        );
+
+        for (Block block : finishes) {
+            ModelInstance instance = new ModelInstance(finishWallModel);
+            Vector3 position = block.getGridPos().cpy().scl(Track.SCALE);
+            instance.transform.setTranslation(position);
+
+            Scene scene = new Scene(instance);
+            sceneManager.addScene(scene);
+        }
     }
 
     @Override
@@ -265,6 +304,7 @@ public class GameScreen extends Menu {
 
     @Override
     public void dispose() {
+        finishWallModel.dispose();
         physicsSystem.dispose();
         sceneManager.dispose();
         brdfLUT.dispose();
