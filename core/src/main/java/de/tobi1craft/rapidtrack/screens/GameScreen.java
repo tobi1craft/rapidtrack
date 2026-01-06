@@ -104,7 +104,7 @@ public class GameScreen extends Menu {
 
         // setup camera (use a reasonable near/far to preserve depth precision)
         camera = new PerspectiveCamera(60f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.near = 0.2f;
+        camera.near = 0.3f;
         camera.far = 1000;
         camera.position.set(startPos.cpy().scl(Track.SCALE).add(0, 3, 5));
         sceneManager.setCamera(camera);
@@ -121,6 +121,10 @@ public class GameScreen extends Menu {
 
         // setup quick IBL (image based lighting)
         IBLBuilder iblBuilder = IBLBuilder.createOutdoor(light);
+        // Set ground colors to match sky colors for all-around sky (removes brown ground)
+        iblBuilder.nearGroundColor.set(iblBuilder.nearSkyColor);
+        iblBuilder.farGroundColor.set(iblBuilder.nearSkyColor);
+        iblBuilder.farSkyColor.set(iblBuilder.nearSkyColor);
         environmentCubemap = iblBuilder.buildEnvMap(1024);
         diffuseCubemap = iblBuilder.buildIrradianceMap(256);
         specularCubemap = iblBuilder.buildRadianceMap(10);
