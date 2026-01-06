@@ -54,7 +54,7 @@ public class InputManager extends InputAdapter {
     }
 
     public boolean isKeyDown(Inputs input) {
-        if (screen.timer() < 0) return false;
+        if (screen.timer() < 0 || screen.isFinished()) return false;
         return keyDown.get(input, 0) > 0;
     }
 

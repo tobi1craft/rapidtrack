@@ -56,6 +56,7 @@ public class GameScreen extends Menu {
     private final ArrayList<Block> finishes = new ArrayList<>();
     private final InputMultiplexer inputMultiplexer = new InputMultiplexer();
     public InputManager inputManager;
+    long resetAt;
     private Car car;
     private CameraController cameraController;
     private boolean drawDebug = false;
@@ -210,17 +211,22 @@ public class GameScreen extends Menu {
         return System.nanoTime() - startTimestamp;
     }
 
+    public boolean isFinished() {
+        return finishTime != 0;
+    }
+
     public void finish() {
+        if (isFinished()) return; //! Methode wird mehrmals aufgerufen
         finishTime = timer();
         if (pb == 0 || pb > finishTime) {
             pb = finishTime;
             pbText = formatTime(pb);
         }
-
-        reset();
+        resetAt = System.nanoTime() + TimeUtils.millisToNanos(3000);
     }
 
     private void reset() {
+        resetAt = 0;
         sceneManager.removeScene(car.getScene());
         car.dispose();
         car = new Car(this, startPos, finishes);
@@ -252,7 +258,7 @@ public class GameScreen extends Menu {
             pbLabel = UI.getLiteralLabel(height * 0.1f, "", Color.WHITE);
             table.add(pbLabel).expandY().expandX().top().right().pad(height * 0.02f).row();
 
-            countdownLabel = UI.getLiteralLabel(height * 0.3f, "", new Color(0, 0.8f, 0.1f, 1));
+            countdownLabel = UI.getLiteralLabel(height * 0.4f, "", new Color(0, 0.8f, 0.3f, 1));
             table.add(countdownLabel).expandY().expandX().pad(height * 0.02f).row();
 
             timeLabel = UI.getLiteralLabel(height * 0.1f, "", Color.WHITE);
@@ -268,13 +274,17 @@ public class GameScreen extends Menu {
         if (Gdx.input.isKeyJustPressed(Input.Keys.F5)) switchCamera();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.FORWARD_DEL)) reset();
+        if (resetAt != 0 && resetAt < System.nanoTime()) reset();
 
         if (!paused) {
             car.update(delta);
             cameraController.update(delta);
             physicsSystem.update(delta);
 
-            if (finishTime == 0 && pauseTimestamp == 0) timeLabel.setText(formatTime(timer()));
+            if (pauseTimestamp == 0) {
+                if (!isFinished()) timeLabel.setText(formatTime(timer()));
+                else timeLabel.setText(formatTime(finishTime));
+            }
             if (timer() < 0) countdownLabel.setText(String.valueOf(TimeUtils.nanosToMillis(timer()) / -500L + 1));
             else countdownLabel.setText("");
             if (pbText != null && !pbLabel.textEquals("PB: " + pbText)) pbLabel.setText("PB: " + pbText);
