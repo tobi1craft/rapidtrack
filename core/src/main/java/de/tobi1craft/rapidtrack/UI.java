@@ -22,13 +22,12 @@ public class UI {
         return new Skin(Gdx.files.internal("skin/quantum-horizon-ui.json")); //TODO: Maybe do own UI skin
     }
 
-    public static BitmapFont getFont(int size, Color color) {
+    public static BitmapFont getFont(int size) {
         if (fonts.containsKey(size)) return fonts.get(size);
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/copse.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = size;
-        parameter.color = color;
         BitmapFont font = generator.generateFont(parameter);
         fonts.put(size, font);
         generator.dispose();
@@ -48,17 +47,22 @@ public class UI {
     }
 
     public static TextButton getLiteralTextButton(float height, String text, Color color) {
-        TextButton.TextButtonStyle style = ResourceManager.getInstance().getSkin().get(TextButton.TextButtonStyle.class);
-        height = Math.max(height, style.up.getMinHeight());
-        style.font = getFont((int) (height / 1.618f), color);
+        TextButton.TextButtonStyle baseStyle = ResourceManager.getInstance().getSkin().get(TextButton.TextButtonStyle.class);
+        height = Math.max(height, baseStyle.up.getMinHeight());
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle(baseStyle);
+        style.font = getFont((int) (height / 1.618f));
+        style.fontColor = color;
         TextButton button = new TextButton(text, style);
         button.setHeight(height);
         return button;
     }
 
     public static Label getLiteralLabel(float height, String text, Color color) {
-        Label.LabelStyle style = ResourceManager.getInstance().getSkin().get(Label.LabelStyle.class);
-        style.font = getFont((int) (height / 1.618f), color);
+        Label.LabelStyle baseStyle = ResourceManager.getInstance().getSkin().get(Label.LabelStyle.class);
+        height = Math.max(height, baseStyle.font.getLineHeight());
+        Label.LabelStyle style = new Label.LabelStyle(baseStyle);
+        style.font = getFont((int) (height / 1.618f));
+        style.fontColor = color;
         Label label = new Label(text, style);
         label.setHeight(height);
         return label;

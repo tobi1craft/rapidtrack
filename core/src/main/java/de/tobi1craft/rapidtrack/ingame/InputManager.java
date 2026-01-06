@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.utils.ObjectIntMap;
+import de.tobi1craft.rapidtrack.screens.GameScreen;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,8 +13,10 @@ import java.util.function.Consumer;
 public class InputManager extends InputAdapter {
     private final Map<Integer, Consumer<Boolean>> keyBindings = new HashMap<>(); //! Verwirrend → erklären
     private final ObjectIntMap<Inputs> keyDown = new ObjectIntMap<>(); //! Integer anstatt Boolean als Value wegen reference counting; ObjectIntMap für increment Methode
+    private final GameScreen screen;
 
-    public InputManager() {
+    public InputManager(GameScreen screen) {
+        this.screen = screen;
         //TODO: Do this in a menu
 
         keyBindings.put(Input.Keys.W, (Boolean pressed) -> keyDown.getAndIncrement(Inputs.ACCELERATE, 0, pressed ? 1 : -1));
@@ -51,6 +54,7 @@ public class InputManager extends InputAdapter {
     }
 
     public boolean isKeyDown(Inputs input) {
+        if (screen.timer() < 0) return false;
         return keyDown.get(input, 0) > 0;
     }
 

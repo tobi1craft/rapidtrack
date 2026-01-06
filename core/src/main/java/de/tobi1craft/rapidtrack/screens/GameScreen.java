@@ -60,7 +60,7 @@ public class GameScreen extends Menu {
     private CameraController cameraController;
     private boolean drawDebug = false;
     private Vector3 startPos = new Vector3();
-    private long startTimestamp = System.nanoTime(); //TODO
+    private long startTimestamp = System.nanoTime() + TimeUtils.millisToNanos(3000); //TODO
     private long pauseTimestamp;
     private long finishTime;
     private Label timeLabel;
@@ -69,12 +69,13 @@ public class GameScreen extends Menu {
     private String pbText;
     private Label pbLabel;
     private Model finishWallModel;
+    private Label countdownLabel;
 
     public GameScreen() {
         setupStage();
         physicsSystem = new PhysicsSystem();
         sceneManager = new SceneManager();
-        inputManager = new InputManager();
+        inputManager = new InputManager(this);
 
         track = new Track();
 
@@ -138,7 +139,7 @@ public class GameScreen extends Menu {
     }
 
     private static String formatTime(long time) {
-        long totalMillis = TimeUtils.nanosToMillis(time);
+        long totalMillis = Math.abs(TimeUtils.nanosToMillis(time));
 
         int hours = (int) (totalMillis / 3600000);
         int minutes = (int) ((totalMillis % 3600000) / 60000);
@@ -146,6 +147,7 @@ public class GameScreen extends Menu {
         int millis = (int) (totalMillis % 1000);
 
         StringBuilder builder = new StringBuilder();
+        if (time < 0) builder.append("-");
         if (hours > 0) {
             builder.append(hours).append(":").append(String.format("%02d:", minutes)).append(String.format("%02d", seconds));
         } else if (minutes > 0) {
@@ -204,7 +206,7 @@ public class GameScreen extends Menu {
         super.resume();
     }
 
-    private long timer() {
+    public long timer() {
         return System.nanoTime() - startTimestamp;
     }
 
@@ -230,7 +232,7 @@ public class GameScreen extends Menu {
             inputMultiplexer.addProcessor(0, cameraController);
         }
         finishTime = 0;
-        startTimestamp = System.nanoTime();
+        startTimestamp = System.nanoTime() + TimeUtils.millisToNanos(1500);
     }
 
     public PhysicsSystem getPhysicsSystem() {
@@ -249,6 +251,9 @@ public class GameScreen extends Menu {
 
             pbLabel = UI.getLiteralLabel(height * 0.1f, "", Color.WHITE);
             table.add(pbLabel).expandY().expandX().top().right().pad(height * 0.02f).row();
+
+            countdownLabel = UI.getLiteralLabel(height * 0.3f, "", new Color(0, 0.8f, 0.1f, 1));
+            table.add(countdownLabel).expandY().expandX().pad(height * 0.02f).row();
 
             timeLabel = UI.getLiteralLabel(height * 0.1f, "", Color.WHITE);
             table.add(timeLabel).expandY().bottom().pad(height * 0.02f);
@@ -270,6 +275,8 @@ public class GameScreen extends Menu {
             physicsSystem.update(delta);
 
             if (finishTime == 0 && pauseTimestamp == 0) timeLabel.setText(formatTime(timer()));
+            if (timer() < 0) countdownLabel.setText(String.valueOf(TimeUtils.nanosToMillis(timer()) / -500L + 1));
+            else countdownLabel.setText("");
             if (pbText != null && !pbLabel.textEquals("PB: " + pbText)) pbLabel.setText("PB: " + pbText);
         }
         sceneManager.update(delta);

@@ -40,7 +40,7 @@ public class Car {
 
         asset = assets.get("models/car.glb", SceneAsset.class);
         scene = new Scene(asset.scene.model, true);
-        scene.modelInstance.transform.translate(blockPos.cpy().scl(Track.SCALE).add(0, 2f, scene.modelInstance.calculateBoundingBox(new BoundingBox()).getDepth() / 2));
+        scene.modelInstance.transform.translate(blockPos.cpy().scl(Track.SCALE).add(0, 1.5f, scene.modelInstance.calculateBoundingBox(new BoundingBox()).getDepth() / 2));
 
         PHYSICS = new CarPhysics(screen, scene.modelInstance, 500f);
 
