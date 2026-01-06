@@ -51,7 +51,6 @@ public class GameScreen extends Menu {
     private final Cubemap specularCubemap;
     private final Texture brdfLUT;
     private final SceneSkybox skybox;
-    private final DirectionalLightEx light;
     private final PhysicsSystem physicsSystem;
     private final ArrayList<Block> finishes = new ArrayList<>();
     private final InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -71,6 +70,7 @@ public class GameScreen extends Menu {
     private Label pbLabel;
     private Model finishWallModel;
     private Label countdownLabel;
+    private Label speedLabel;
 
     public GameScreen() {
         setupStage();
@@ -113,8 +113,10 @@ public class GameScreen extends Menu {
         cameraController = new Cam1(camera, car);
 
 
+        //TODO: improve rendering according to gdx-gltf docs
+
         // setup light
-        light = new DirectionalLightEx();
+        DirectionalLightEx light = new DirectionalLightEx();
         light.direction.set(1, -3, 1).nor();
         light.color.set(Color.WHITE);
         sceneManager.environment.add(light);
@@ -252,21 +254,29 @@ public class GameScreen extends Menu {
     private void setupStage() {
         stage = new Stage(new ScreenViewport(), ResourceManager.getInstance().getBatch());
 
-        Table table = new Table();
-        table.setFillParent(true);
-        stage.addActor(table);
+        Table timeTable = new Table();
+        timeTable.setFillParent(true);
+        stage.addActor(timeTable);
+
+        Table speedTable = new Table();
+        speedTable.setFillParent(true);
+        stage.addActor(speedTable);
 
         resize = (width, height) -> {
-            table.clearChildren();
+            timeTable.clearChildren();
+            speedTable.clearChildren();
 
             pbLabel = UI.getLiteralLabel(height * 0.1f, "", Color.WHITE);
-            table.add(pbLabel).expandY().expandX().top().right().pad(height * 0.02f).row();
+            timeTable.add(pbLabel).expand().top().right().pad(height * 0.02f).row();
 
             countdownLabel = UI.getLiteralLabel(height * 0.4f, "", new Color(0, 0.8f, 0.3f, 1));
-            table.add(countdownLabel).expandY().expandX().pad(height * 0.02f).row();
+            timeTable.add(countdownLabel).expand().pad(height * 0.02f).row();
 
             timeLabel = UI.getLiteralLabel(height * 0.1f, "", Color.WHITE);
-            table.add(timeLabel).expandY().bottom().pad(height * 0.02f);
+            timeTable.add(timeLabel).expand().bottom().pad(height * 0.02f);
+
+            speedLabel = UI.getLiteralLabel(height * 0.1f, "0", Color.CYAN);
+            speedTable.add(speedLabel).expand().bottom().right().pad(height * 0.02f);
 
             sceneManager.updateViewport(width, height);
         };
@@ -292,6 +302,7 @@ public class GameScreen extends Menu {
             if (timer() < 0) countdownLabel.setText(String.valueOf(TimeUtils.nanosToMillis(timer()) / -500L + 1));
             else countdownLabel.setText("");
             if (pbText != null && !pbLabel.textEquals("PB: " + pbText)) pbLabel.setText("PB: " + pbText);
+            if (car != null && timer() > 0) speedLabel.setText(String.valueOf((int) car.getSpeed()));
         }
         sceneManager.update(delta);
         sceneManager.render();

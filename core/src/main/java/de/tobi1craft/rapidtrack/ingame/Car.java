@@ -29,7 +29,6 @@ public class Car {
     private final SceneAsset asset;
     private final AllHitsRayResultCallback raycastCallback;
     private float rotation = 0;
-    private float speed = 0;
     private float acceleration = 0;
     private float visualFrontSteerDeg = 0f;
     private boolean isDrifting = false;
@@ -52,7 +51,7 @@ public class Car {
     }
 
     public void update(float delta) {
-        speed = PHYSICS.getSpeed();
+        float speed = -PHYSICS.getSpeed();
 
         if (checkForFinish()) {
             screen.finish();
@@ -133,7 +132,7 @@ public class Car {
     }
 
     public float getSpeed() {
-        return PHYSICS.getSpeed();
+        return -PHYSICS.getSpeed();
     }
 
     public void dispose() {
