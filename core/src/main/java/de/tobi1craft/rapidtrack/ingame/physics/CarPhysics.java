@@ -106,12 +106,19 @@ public class CarPhysics {
         return vehicle.getCurrentSpeedKmHour();
     }
 
-    public void update(float delta) {
+    public void update(float delta, float acceleration, float brake, boolean drift) {
         vehicle.updateVehicle(delta);
         vehicle.applyEngineForce(acceleration * mass, 0);
         vehicle.applyEngineForce(acceleration * mass, 1);
         vehicle.applyEngineForce(acceleration * mass, 2);
         vehicle.applyEngineForce(acceleration * mass, 3);
+        vehicle.setBrake(brake, 0);
+        vehicle.setBrake(brake, 1);
+        vehicle.setBrake(brake, 2);
+        vehicle.setBrake(brake, 3);
+        if (drift) {
+            body.applyImpulse(new Vector3(Math.signum(vehicle.getSteeringValue(0)) * 10, 0, 0), new Vector3(0, 0, 1.5f));
+        }
     }
 
     public void dispose() {
