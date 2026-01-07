@@ -1,6 +1,5 @@
 dependencies {
     api(project(":shared"))
-    api("com.badlogicgames.gdx-controllers:gdx-controllers-core:${property("gdxControllersVersion")}")
     api("com.badlogicgames.gdx:gdx-bullet:${property("gdxVersion")}")
     api("com.badlogicgames.gdx:gdx:${property("gdxVersion")}")
     api("com.badlogicgames.gdx:gdx-freetype:${property("gdxVersion")}")

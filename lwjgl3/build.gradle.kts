@@ -26,7 +26,6 @@ application {
 }
 
 dependencies {
-    implementation("com.badlogicgames.gdx-controllers:gdx-controllers-desktop:${property("gdxControllersVersion")}")
     implementation("com.badlogicgames.gdx:gdx-backend-lwjgl3:${property("gdxVersion")}")
     implementation("com.badlogicgames.gdx:gdx-bullet-platform:${property("gdxVersion")}:natives-desktop")
     implementation("com.badlogicgames.gdx:gdx-platform:${property("gdxVersion")}:natives-desktop")
