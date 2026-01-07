@@ -1,4 +1,4 @@
-package de.tobi1craft.rapidtrack.bullet;
+package de.tobi1craft.rapidtrack.ingame.physics;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;

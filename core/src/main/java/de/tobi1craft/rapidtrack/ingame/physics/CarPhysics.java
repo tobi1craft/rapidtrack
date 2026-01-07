@@ -53,8 +53,6 @@ public class CarPhysics {
             wheel.setSuspensionStiffness(20f);
         }
 
-        screen.getPhysicsSystem().getDynamicsWorld().addVehicle(vehicle);
-        screen.getPhysicsSystem().getDynamicsWorld().addRigidBody(body);
         dynamicsWorld.addVehicle(vehicle);
         dynamicsWorld.addRigidBody(body);
     }
