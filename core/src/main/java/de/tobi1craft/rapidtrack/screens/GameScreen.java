@@ -231,7 +231,7 @@ public class GameScreen extends Menu {
         resetAt = System.nanoTime() + TimeUtils.millisToNanos(3000);
     }
 
-    private void reset() {
+    public void reset() {
         resetAt = 0;
         sceneManager.removeScene(car.getScene());
         car.dispose();

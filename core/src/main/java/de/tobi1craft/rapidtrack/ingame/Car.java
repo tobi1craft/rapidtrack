@@ -58,6 +58,11 @@ public class Car {
             return;
         }
 
+        if (getPosition().y < -10) {
+            screen.reset();
+            return;
+        }
+
         acceleration = 0;//-0.5f * Math.signum(speed) * (float) Math.sqrt(Math.abs(speed)); //! Default air friction
         rotation = 0;
 

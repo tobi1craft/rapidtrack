@@ -1,7 +1,6 @@
 package de.tobi1craft.rapidtrack;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -80,7 +79,7 @@ public class RapidTrack extends Game {
 
     @Override
     public void render() {
-        ScreenUtils.clear(Color.CLEAR, true); //TODO: mit anti-aliasing
+        ScreenUtils.clear(0, 0, 0, 0, true, true);
         super.render();
 
         if (assets.isFinished()) return;
