@@ -53,8 +53,6 @@ public class CarPhysics {
             wheel.setSuspensionStiffness(20f);
         }
 
-        screen.getPhysicsSystem().getDynamicsWorld().addVehicle(vehicle);
-        screen.getPhysicsSystem().getDynamicsWorld().addRigidBody(body);
         dynamicsWorld.addVehicle(vehicle);
         dynamicsWorld.addRigidBody(body);
     }
@@ -108,7 +106,6 @@ public class CarPhysics {
         return vehicle.getCurrentSpeedKmHour();
     }
 
-    public void render(float delta) {
     public void update(float delta) {
         vehicle.updateVehicle(delta);
         vehicle.applyEngineForce(acceleration * mass, 0);
