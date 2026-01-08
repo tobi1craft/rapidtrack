@@ -4,18 +4,18 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import de.tobi1craft.rapidtrack.RapidTrack;
 
-/** Launches the desktop (LWJGL3) application. */
+/**
+ * Launches the desktop (LWJGL3) application.
+ */
 public class Lwjgl3Launcher {
-    @SuppressWarnings("unused")
-    public static Lwjgl3Application application;
 
-    public static void main(String[] args) {
+    static void main() {
         if (StartupHelper.startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
-        application = createApplication();
+        createApplication();
     }
 
-    private static Lwjgl3Application createApplication() {
-        return new Lwjgl3Application(new RapidTrack(), getDefaultConfiguration());
+    private static void createApplication() {
+        new Lwjgl3Application(new RapidTrack(), getDefaultConfiguration());
     }
 
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
@@ -38,7 +38,7 @@ public class Lwjgl3Launcher {
         //LostFocus also triggers when minimized
         configuration.setPauseWhenLostFocus(true);
 
-        configuration.setBackBufferConfig(8, 8, 8, 8, 16, 0, 4); //TODO: What's the best config?
+        configuration.setBackBufferConfig(8, 8, 8, 8, 16, 0, 4);
         return configuration;
     }
 }

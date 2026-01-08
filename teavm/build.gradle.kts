@@ -15,33 +15,12 @@ gretty {
 //sourceSets["main"].resources.srcDirs.plusAssign(rootProject.file("assets"))
 
 dependencies {
-    implementation("com.badlogicgames.gdx:gdx:${property("gdxVersion")}") //??? https://github.com/xpenatan/gdx-teavm/blob/master/examples/core/teavm/build.gradle
+    implementation("com.badlogicgames.gdx:gdx:${property("gdxVersion")}")
     implementation("com.github.xpenatan.gdx-teavm:backend-teavm:${property("gdxTeaVMVersion")}")
     implementation("com.github.xpenatan.gdx-teavm:gdx-freetype-teavm:${property("gdxTeaVMVersion")}")
     implementation("com.github.xpenatan.gdx-teavm:gdx-bullet-teavm:${property("gdxBulletTeaVMVersion")}")
     implementation(project(":core"))
 }
-
-//tasks.register<Jar>("sourceJar") {
-//    archiveClassifier.set("sources") // Results in your-app-sources.jar
-//    from(sourceSets.main.get().java.srcDirs) // Include source directories
-//    include("**/*.java") // Include .java files
-//    include("**/*.kt")   // Include .kt files (if using Kotlin)
-//}
-//
-//// Make the build task depend on sourceJar
-//tasks.build {
-//    dependsOn("sourceJar")
-//}
-
-tasks.register<Jar>("sourceJar") {
-    archiveClassifier.set("sources") // Sets the classifier to "sources" (e.g., your-app-sources.jar)
-    from(sourceSets.main.get().java.srcDirs) // Include source directories
-    include("**/*.java") // Include .java files
-    include("**/*.kt")   // Include .kt files (if using Kotlin)
-    //? Include assets directory specifically?
-}
-
 
 val mainClassName = "de.tobi1craft.rapidtrack.teavm.TeaVMBuilder"
 val mainConfigClassName = "de.tobi1craft.rapidtrack.teavm.TeaVMConfig"

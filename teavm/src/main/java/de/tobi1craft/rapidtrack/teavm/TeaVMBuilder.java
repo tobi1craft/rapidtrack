@@ -3,17 +3,15 @@ package de.tobi1craft.rapidtrack.teavm;
 import com.github.xpenatan.gdx.backends.teavm.config.TeaBuilder;
 import org.teavm.tooling.TeaVMSourceFilePolicy;
 import org.teavm.tooling.TeaVMTool;
-import org.teavm.tooling.sources.DirectorySourceFileProvider;
 import org.teavm.vm.TeaVMOptimizationLevel;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
  * Builds the TeaVM/HTML application.
  */
 public class TeaVMBuilder {
-    public static void main(String[] args) throws IOException {
+    static void main() throws IOException {
         TeaVMConfig.configureWebapp();
 
         TeaVMTool tool = new TeaVMTool();
@@ -21,15 +19,11 @@ public class TeaVMBuilder {
         tool.setOptimizationLevel(TeaVMOptimizationLevel.FULL);
         tool.setMainClass(TeaVMLauncher.class.getName());
 
+        //TODO: Remove all 3 for production
         tool.setDebugInformationGenerated(true);
         tool.setSourceMapsFileGenerated(true);
-        tool.setSourceFilePolicy(TeaVMSourceFilePolicy.COPY); //TODO: Maybe change for production
+        tool.setSourceFilePolicy(TeaVMSourceFilePolicy.COPY);
 
-        File coreSourcePath = new File("../core/src/main/java");
-        tool.addSourceFileProvider(new DirectorySourceFileProvider(coreSourcePath));
-
-        int size = 64 * (1 << 20);
-        tool.setMaxDirectBuffersSize(size);
         TeaBuilder.build(tool);
     }
 }
