@@ -82,7 +82,6 @@ public class Car {
         float alpha = 1f - (float) Math.exp(-12f * delta);
         smoothedSteering = MathUtils.lerp(smoothedSteering, rotation, alpha);
 
-        PHYSICS.setAcceleration(0.3f * acceleration);
         PHYSICS.setSteering(smoothedSteering * MathUtils.degreesToRadians);
         PHYSICS.update(delta, .3f * acceleration, .3f * brake, isDrifting);
 

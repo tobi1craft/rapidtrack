@@ -5,17 +5,17 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("io.github.fourlastor:construo:1.7.1")
+        classpath("io.github.fourlastor:construo:2.1.0")
         if (property("enableGraalNative") == "true") {
-            classpath("org.graalvm.buildtools.native:org.graalvm.buildtools.native.gradle.plugin:0.11.0")
+            classpath("org.graalvm.buildtools.native:org.graalvm.buildtools.native.gradle.plugin:0.11.3")
         }
     }
 }
 
 plugins {
     application
-    id("io.github.fourlastor.construo") version "1.7.1"
-    id("org.graalvm.buildtools.native") version "0.11.0"
+    id("io.github.fourlastor.construo") version "2.1.0"
+    id("org.graalvm.buildtools.native") version "0.11.3"
 }
 
 //sourceSets["main"].resources.srcDirs.plusAssign(rootProject.file("assets"))

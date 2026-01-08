@@ -2,8 +2,8 @@ import org.teavm.gradle.api.SourceFilePolicy
 
 plugins {
     java
-    id("org.gretty") version "4.1.7"
-    id("org.teavm") version "0.12.3"
+    id("org.gretty") version "5.0.1"
+    id("org.teavm") version "0.13.0"
 }
 
 gretty {

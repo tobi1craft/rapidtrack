@@ -20,7 +20,6 @@ public class CarPhysics {
     private final btDynamicsWorld dynamicsWorld;
     private final btVehicleRaycaster raycaster;
     private final btRaycastVehicle.btVehicleTuning tuning;
-    private float acceleration = 0;
 
 
     public CarPhysics(GameScreen screen, ModelInstance modelInstance, float mass) {
@@ -91,10 +90,6 @@ public class CarPhysics {
         body.setFriction(0.5f); //! 0.5 is default
 
         return body;
-    }
-
-    public void setAcceleration(float acceleration) {
-        this.acceleration = acceleration;
     }
 
     public void setSteering(float steering) {
