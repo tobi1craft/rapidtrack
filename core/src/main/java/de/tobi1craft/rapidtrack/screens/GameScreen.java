@@ -40,20 +40,22 @@ import net.mgsx.gltf.scene3d.scene.SceneSkybox;
 import net.mgsx.gltf.scene3d.utils.IBLBuilder;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class GameScreen extends Menu {
 
-    private final Track track;
     private final SceneManager sceneManager;
     private final PerspectiveCamera camera;
     private final Cubemap diffuseCubemap;
     private final Cubemap environmentCubemap;
     private final Cubemap specularCubemap;
+    //brdfLUT: Bidirectional Reflectance Distribution Function Lookup Table
     private final Texture brdfLUT;
     private final SceneSkybox skybox;
     private final PhysicsSystem physicsSystem;
     private final ArrayList<Block> finishes = new ArrayList<>();
     private final InputMultiplexer inputMultiplexer = new InputMultiplexer();
+    private final LinkedList<Float> deltaTimes100frames = new LinkedList<>();
     public InputManager inputManager;
     long resetAt;
     private Car car;
@@ -71,6 +73,7 @@ public class GameScreen extends Menu {
     private Model finishWallModel;
     private Label countdownLabel;
     private Label speedLabel;
+    private Label fpsLabel;
 
     public GameScreen() {
         setupStage();
@@ -78,7 +81,7 @@ public class GameScreen extends Menu {
         sceneManager = new SceneManager();
         inputManager = new InputManager(this);
 
-        track = new Track();
+        Track track = new Track();
 
         for (Block block : track.grid) {
             sceneManager.addScene(block.getScene());
@@ -102,14 +105,13 @@ public class GameScreen extends Menu {
         sceneManager.addScene(car.getScene());
 
 
-        // setup camera (use a reasonable near/far to preserve depth precision)
+        // set up camera (use a reasonable near/far to preserve depth precision)
         camera = new PerspectiveCamera(60f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.near = 0.3f;
         camera.far = 1000;
         camera.position.set(startPos.cpy().scl(Track.SCALE).add(0, 3, 5));
         sceneManager.setCamera(camera);
 
-        if (drawDebug) physicsSystem.render(camera);
         cameraController = new Cam1(camera, car);
 
 
@@ -123,7 +125,7 @@ public class GameScreen extends Menu {
 
         // setup quick IBL (image based lighting)
         IBLBuilder iblBuilder = IBLBuilder.createOutdoor(light);
-        // Set ground colors to match sky colors for all-around sky (removes brown ground)
+        // Set ground colors to match sky colors for an all-around sky (removes brown ground)
         iblBuilder.nearGroundColor.set(iblBuilder.nearSkyColor);
         iblBuilder.farGroundColor.set(iblBuilder.nearSkyColor);
         iblBuilder.farSkyColor.set(iblBuilder.nearSkyColor);
@@ -132,7 +134,7 @@ public class GameScreen extends Menu {
         specularCubemap = iblBuilder.buildRadianceMap(10);
         iblBuilder.dispose();
 
-        // This texture is provided by the library, no need to have it in your assets.
+        // This texture is provided by gltf
         brdfLUT = new Texture(Gdx.files.classpath("net/mgsx/gltf/shaders/brdfLUT.png"));
 
         sceneManager.setAmbientLight(1f);
@@ -140,7 +142,7 @@ public class GameScreen extends Menu {
         sceneManager.environment.set(PBRCubemapAttribute.createSpecularEnv(specularCubemap));
         sceneManager.environment.set(PBRCubemapAttribute.createDiffuseEnv(diffuseCubemap));
 
-        // setup skybox
+        // skybox setup
         skybox = new SceneSkybox(environmentCubemap);
         sceneManager.setSkyBox(skybox);
     }
@@ -266,6 +268,9 @@ public class GameScreen extends Menu {
             timeTable.clearChildren();
             speedTable.clearChildren();
 
+            fpsLabel = UI.getLiteralLabel(height * 0.1f, "", Color.WHITE);
+            speedTable.add(fpsLabel).expand().top().left().pad(height * 0.02f);
+
             pbLabel = UI.getLiteralLabel(height * 0.1f, "", Color.WHITE);
             timeTable.add(pbLabel).expand().top().right().pad(height * 0.02f).row();
 
@@ -299,6 +304,12 @@ public class GameScreen extends Menu {
                 if (!isFinished()) timeLabel.setText(formatTime(timer()));
                 else timeLabel.setText(formatTime(finishTime));
             }
+
+            deltaTimes100frames.addLast(delta);
+            while (deltaTimes100frames.size() > 100) deltaTimes100frames.removeFirst();
+            int fps = deltaTimes100frames.isEmpty() ? 0 : (int) (deltaTimes100frames.size() / deltaTimes100frames.stream().reduce(0f, Float::sum));
+            fpsLabel.setText("FPS: " + fps);
+
             if (timer() < 0) countdownLabel.setText(String.valueOf(TimeUtils.nanosToMillis(timer()) / -500L + 1));
             else countdownLabel.setText("");
             if (pbText != null && !pbLabel.textEquals("PB: " + pbText)) pbLabel.setText("PB: " + pbText);
