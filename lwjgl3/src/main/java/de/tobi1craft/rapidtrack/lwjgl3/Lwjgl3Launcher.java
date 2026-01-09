@@ -9,7 +9,8 @@ import de.tobi1craft.rapidtrack.RapidTrack;
  */
 public class Lwjgl3Launcher {
 
-    static void main() {
+    @SuppressWarnings("unused")
+    static void main(String[] args) {
         if (StartupHelper.startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
         createApplication();
     }
