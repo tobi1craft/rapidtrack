@@ -76,7 +76,7 @@ public class Car {
         if (screen.inputManager.isKeyDown(InputManager.Inputs.RIGHT)) rotation -= 30f;
 
 
-        Gdx.app.debug("Car", "Acceleration: " + acceleration + " | Brake: " + brake + " | Drift: " + isDrifting);
+        Gdx.app.debug("Car", "Acceleration: " + acceleration + " | Brake: " + brake + " | Drift: " + isDrifting + " | Speed: " + speed);
 
 
         float alpha = 1f - (float) Math.exp(-12f * delta);
@@ -131,7 +131,7 @@ public class Car {
     }
 
     public float getSpeed() {
-        return -PHYSICS.getSpeed();
+        return screen.timer() < 0 ? 0 : -PHYSICS.getSpeed();
     }
 
     public void dispose() {

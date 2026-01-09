@@ -112,7 +112,7 @@ public class CarPhysics {
         vehicle.setBrake(brake, 2);
         vehicle.setBrake(brake, 3);
         if (drift) {
-            body.applyImpulse(new Vector3(Math.signum(vehicle.getSteeringValue(0)) * 10, 0, 0), new Vector3(0, 0, 1.5f));
+            body.applyImpulse(new Vector3(Math.signum(vehicle.getSteeringValue(0)) * delta * 3000, 0, 0), new Vector3(0, 0, 1.5f));
         }
     }
 

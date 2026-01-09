@@ -29,8 +29,10 @@ public class Cam1 extends CameraController {
 
         newPosition.set(position);
 
-        camera.position.lerp(newPosition.add(direction.scl(4f)), Math.abs(car.getSpeed()) * delta * 0.5f);
-        camera.position.y = MathUtils.lerp(camera.position.y, camera.position.y + 2f, Math.abs(car.getSpeed()) * delta * 0.5f);
+        float alpha = Math.min(Math.abs(car.getSpeed()) * delta * 0.5f, 1f);
+        int sign = car.getSpeed() >= 0f ? 1 : -1;
+        camera.position.lerp(newPosition.add(direction.scl(sign * 4f)), alpha);
+        camera.position.y = MathUtils.lerp(camera.position.y, camera.position.y + 2f, alpha);
 
         camera.lookAt(position);
         camera.up.set(Vector3.Y); //! camera.up wird durch camera.lookAt geändert
