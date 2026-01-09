@@ -35,12 +35,7 @@ public class MusicManager {
 
     public void setVolume(float volume) {
         if (volume == this.volume) return;
-        if (this.volume == 0) {
-            switch (RapidTrack.getInstance().whichScreen()) {
-                case MAIN_MENU, SETTINGS -> mainMusic(false);
-                //TODO: start music for other screens
-            }
-        }
+        if (this.volume == 0) mainMusic(false);
         this.volume = volume;
         music.setVolume(volume);
     }

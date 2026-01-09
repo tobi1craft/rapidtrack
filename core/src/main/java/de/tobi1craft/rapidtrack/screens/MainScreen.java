@@ -1,5 +1,6 @@
 package de.tobi1craft.rapidtrack.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -23,7 +24,6 @@ public class MainScreen extends Menu {
 
         Table table = new Table();
         table.setFillParent(true);
-        table.setDebug(true);
         stage.addActor(table);
 
         resize = (width, height) -> {
@@ -31,16 +31,27 @@ public class MainScreen extends Menu {
 
             table.clearChildren();
 
-            TextButton button = UI.getTextButton(height * 0.15f, "play");
-            table.add(button).expandX();
-
-            table.add().expandX();
-            table.add().expandX();
-
-            // start the game when the button is clicked
-            button.addListener(new ChangeListener() {
+            TextButton play = UI.getTextButton(height * 0.15f, "play");
+            table.add(play).expand().left().padLeft(width * 0.1f).row();
+            play.addListener(new ChangeListener() {
                 public void changed(ChangeEvent event, Actor actor) {
                     RapidTrack.getInstance().setScreen(Screens.GAME);
+                }
+            });
+
+            TextButton settings = UI.getTextButton(height * 0.15f, "settings");
+            table.add(settings).expand().left().padLeft(width * 0.1f).row();
+            settings.addListener(new ChangeListener() {
+                public void changed(ChangeEvent event, Actor actor) {
+                    RapidTrack.getInstance().setScreen(Screens.SETTINGS);
+                }
+            });
+
+            TextButton exit = UI.getTextButton(height * 0.15f, "exit");
+            table.add(exit).expand().left().padLeft(width * 0.1f).row();
+            exit.addListener(new ChangeListener() {
+                public void changed(ChangeEvent event, Actor actor) {
+                    Gdx.app.exit();
                 }
             });
         };

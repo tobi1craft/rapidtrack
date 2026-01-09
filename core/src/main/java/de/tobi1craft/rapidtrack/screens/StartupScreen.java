@@ -18,12 +18,11 @@ public class StartupScreen extends Menu {
     public StartupScreen() {
         stage = new Stage(new ScreenViewport(), ResourceManager.getInstance().getBatch());
 
-        Image background = new Image(assets.loadAndGet("screens/startup_temp.png", Texture.class));
+        Image background = new Image(assets.loadAndGet("screens/startup.png", Texture.class));
         stage.addActor(background);
 
         Table table = new Table();
         table.setFillParent(true);
-        table.setDebug(true);
         stage.addActor(table);
 
         resize = (width, height) -> {
@@ -33,11 +32,11 @@ public class StartupScreen extends Menu {
             table.add().expandY().row();
             table.add().expandY().row();
 
-            TextButton button = UI.getLiteralTextButton(height * 0.15f, "Start");
-            table.add(button).expandY();
+            TextButton start = UI.getTextButton(height * 0.15f, "start");
+            table.add(start).expandY();
 
             // start the game when the button is clicked
-            button.addListener(new ChangeListener() {
+            start.addListener(new ChangeListener() {
                 public void changed(ChangeEvent event, Actor actor) {
                     if (assets.isFinished()) RapidTrack.getInstance().actualStart();
                 }
@@ -49,6 +48,6 @@ public class StartupScreen extends Menu {
 
     @Override
     public void hide() {
-        assets.unload("screens/startup_temp.png");
+        assets.unload("screens/startup.png");
     }
 }

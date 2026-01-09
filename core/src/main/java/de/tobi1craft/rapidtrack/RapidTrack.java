@@ -4,10 +4,10 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ScreenUtils;
-import de.tobi1craft.rapidtrack.destinations.Destination;
 import de.tobi1craft.rapidtrack.enums.Screens;
 import de.tobi1craft.rapidtrack.screens.GameScreen;
 import de.tobi1craft.rapidtrack.screens.MainScreen;
+import de.tobi1craft.rapidtrack.screens.SettingsScreen;
 import de.tobi1craft.rapidtrack.screens.StartupScreen;
 import de.tobi1craft.rapidtrack.util.RTAssetManager;
 
@@ -21,7 +21,6 @@ public class RapidTrack extends Game {
     private Preferences settings;
     private RTAssetManager assets;
     private Screens screen;
-    private Destination destination;
 
     public static RapidTrack getInstance() {
         return instance;
@@ -46,10 +45,12 @@ public class RapidTrack extends Game {
     public void create() {
         Gdx.app.setLogLevel(Application.LOG_DEBUG); //TODO: Production
         instance = this;
-        settings = Gdx.app.getPreferences("settings");
+        settings = Gdx.app.getPreferences("RapidTrack-Settings");
         assets = new RTAssetManager();
+        UI.lang = assets.loadAndGet("i18n/messages", I18NBundle.class);
         Bullet.init(false, true);
-        musicManager = new MusicManager(assets, 0.02f);
+        musicManager = new MusicManager(assets, settings.getInteger("volume", 2) / 100f);
+        Gdx.graphics.setForegroundFPS(settings.getInteger("fps", Gdx.graphics.getDisplayMode().refreshRate));
 
         setScreen(Screens.STARTUP);
     }
@@ -64,8 +65,7 @@ public class RapidTrack extends Game {
             case STARTUP -> new StartupScreen();
             case MAIN_MENU -> new MainScreen();
             case GAME -> new GameScreen();
-            //TODO all Menus
-            default -> null;
+            case SETTINGS -> new SettingsScreen(settings, musicManager);
         };
     }
 
@@ -74,20 +74,7 @@ public class RapidTrack extends Game {
         ScreenUtils.clear(0, 0, 0, 0, true, true);
         super.render();
 
-        if (assets.isFinished()) return;
-
-        if (assets.update(1000 / settings.getInteger("fps", 60))) {
-            if (screen == Screens.STARTUP) {
-                Gdx.app.debug(this.getClass().getName(), "startup loaded");
-                UI.lang = assets.get("i18n/messages", I18NBundle.class);
-            }
-
-
-        } else if (screen == Screens.STARTUP) {
-
-        } else {
-            setScreen(Screens.LOADING);
-        }
+        assets.update(1000 / settings.getInteger("fps", Gdx.graphics.getDisplayMode().refreshRate));
     }
 
     @Override
