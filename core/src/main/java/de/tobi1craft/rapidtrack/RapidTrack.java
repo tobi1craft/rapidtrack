@@ -35,10 +35,18 @@ public class RapidTrack extends Game {
     }
 
     public void setScreen(Screens screen) {
+        setScreen(screen, false);
+    }
+
+    public void setScreen(Screens screen, boolean removeCurrent) {
+        Screens old = this.screen;
         if (menus.get(screen) == null) menus.put(screen, getMenu(screen));
         this.setScreen(menus.get(screen));
         this.screen = screen;
-
+        if (removeCurrent) {
+            menus.get(old).dispose();
+            menus.remove(old);
+        }
     }
 
     @Override
@@ -57,7 +65,7 @@ public class RapidTrack extends Game {
 
     public void actualStart() {
         musicManager.mainMusic(true);
-        setScreen(Screens.MAIN_MENU);
+        setScreen(Screens.MAIN_MENU, true);
     }
 
     private Screen getMenu(Screens screen) {

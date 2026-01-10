@@ -14,13 +14,18 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import de.tobi1craft.rapidtrack.RapidTrack;
 import de.tobi1craft.rapidtrack.ResourceManager;
 import de.tobi1craft.rapidtrack.UI;
+import de.tobi1craft.rapidtrack.enums.Screens;
 import de.tobi1craft.rapidtrack.ingame.Block;
 import de.tobi1craft.rapidtrack.ingame.Car;
 import de.tobi1craft.rapidtrack.ingame.InputManager;
@@ -74,6 +79,7 @@ public class GameScreen extends Menu {
     private Label countdownLabel;
     private Label speedLabel;
     private Label fpsLabel;
+    private TextButton leaveButton;
 
     public GameScreen() {
         setupStage();
@@ -259,16 +265,16 @@ public class GameScreen extends Menu {
         timeTable.setFillParent(true);
         stage.addActor(timeTable);
 
-        Table speedTable = new Table();
-        speedTable.setFillParent(true);
-        stage.addActor(speedTable);
+        Table miscTable = new Table();
+        miscTable.setFillParent(true);
+        stage.addActor(miscTable);
 
         resize = (width, height) -> {
             timeTable.clearChildren();
-            speedTable.clearChildren();
+            miscTable.clearChildren();
 
             fpsLabel = UI.getLiteralLabel(height * 0.1f, "", Color.WHITE);
-            speedTable.add(fpsLabel).expand().top().left().pad(height * 0.02f);
+            miscTable.add(fpsLabel).expand().top().left().pad(height * 0.02f).row();
 
             pbLabel = UI.getLiteralLabel(height * 0.1f, "", Color.WHITE);
             timeTable.add(pbLabel).expand().top().right().pad(height * 0.02f).row();
@@ -279,8 +285,17 @@ public class GameScreen extends Menu {
             timeLabel = UI.getLiteralLabel(height * 0.1f, "", Color.WHITE);
             timeTable.add(timeLabel).expand().bottom().pad(height * 0.02f);
 
+            leaveButton = UI.getTextButton(height * 0.05f, "quitToMain");
+            miscTable.add(leaveButton).expand().bottom().left().pad(height * 0.02f);
+            leaveButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    RapidTrack.getInstance().setScreen(Screens.MAIN_MENU, false);
+                }
+            });
+
             speedLabel = UI.getLiteralLabel(height * 0.1f, "0", Color.CYAN);
-            speedTable.add(speedLabel).expand().bottom().right().pad(height * 0.02f);
+            miscTable.add(speedLabel).expand().bottom().right().pad(height * 0.02f);
 
             sceneManager.updateViewport(width, height);
         };
