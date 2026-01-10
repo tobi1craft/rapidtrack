@@ -99,7 +99,7 @@ public class GameScreen extends Menu {
                 sceneInfo.dispose();
                 sceneBody.setWorldTransform(block.getScene().modelInstance.transform);
                 sceneBody.setFriction(block.getFriction()); //! 0.5 is default
-                physicsSystem.getDynamicsWorld().addRigidBody(sceneBody);
+                physicsSystem.addStaticBody(sceneBody, shape);
             }
             if (block.isStart()) startPos = block.getGridPos();
             if (block.isFinish()) finishes.add(block);
@@ -290,7 +290,7 @@ public class GameScreen extends Menu {
             leaveButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    RapidTrack.getInstance().setScreen(Screens.MAIN_MENU, false);
+                    RapidTrack.getInstance().setScreen(Screens.MAIN_MENU, true);
                 }
             });
 
@@ -362,6 +362,7 @@ public class GameScreen extends Menu {
     @Override
     public void dispose() {
         finishWallModel.dispose();
+        car.dispose();
         physicsSystem.dispose();
         sceneManager.dispose();
         brdfLUT.dispose();
@@ -369,7 +370,6 @@ public class GameScreen extends Menu {
         specularCubemap.dispose();
         environmentCubemap.dispose();
         skybox.dispose();
-        car.dispose();
         assets.unload("models/car.glb");
         super.dispose();
     }

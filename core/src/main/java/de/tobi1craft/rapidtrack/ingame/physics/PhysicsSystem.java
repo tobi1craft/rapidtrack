@@ -4,14 +4,12 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.*;
-import com.badlogic.gdx.physics.bullet.dynamics.btConstraintSolver;
-import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
-import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
-import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
+import com.badlogic.gdx.physics.bullet.dynamics.*;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.badlogic.gdx.utils.Disposable;
 import de.tobi1craft.rapidtrack.ingame.Car;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class PhysicsSystem implements Disposable {
@@ -27,7 +25,7 @@ public class PhysicsSystem implements Disposable {
     private final btCollisionConfiguration collisionConfig;
     /**
      * A collision dispatcher iterates over each pair, searches for a matching collision algorithm based on the
-     * types of objects involved and executes the collision algorithm computing contact points.
+     * types of objects involved, and executes the collision algorithm computing contact points.
      */
     private final btDispatcher dispatcher;
     /**
@@ -38,13 +36,16 @@ public class PhysicsSystem implements Disposable {
     private final btConstraintSolver constraintSolver;
     private final DebugDrawer debugDrawer;
 
+    private final ArrayList<btRigidBody> staticBodies = new ArrayList<>();
+    private final ArrayList<btCollisionShape> staticShapes = new ArrayList<>();
+
 
     public PhysicsSystem() {
         collisionConfig = new btDefaultCollisionConfiguration();
         dispatcher = new btCollisionDispatcher(collisionConfig);
 
         // General purpose, well-optimized broadphase, adapts dynamically to the dimensions of the world.
-        broadphase = new btDbvtBroadphase(); //! Broadphase checkt, ob sich etwas ungefähr in die Nähe kommt
+        broadphase = new btDbvtBroadphase(); //! Broadphase checkt, ob sich 2 bodies ungefähr in die Nähe kommen
         constraintSolver = new btSequentialImpulseConstraintSolver();
         dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
         dynamicsWorld.setGravity(new Vector3(0, -3.5f, 0));
@@ -72,12 +73,30 @@ public class PhysicsSystem implements Disposable {
         return dynamicsWorld;
     }
 
+    public void addStaticBody(btRigidBody body, btCollisionShape shape) {
+        staticBodies.add(body);
+        staticShapes.add(shape);
+        dynamicsWorld.addRigidBody(body);
+    }
+
     @Override
     public void dispose() {
-        collisionConfig.dispose();
-        dispatcher.dispose();
-        broadphase.dispose();
-        constraintSolver.dispose();
+        for (btRigidBody body : staticBodies) {
+            dynamicsWorld.removeRigidBody(body);
+            body.dispose();
+        }
+        staticBodies.clear();
+
+        for (btCollisionShape shape : staticShapes) {
+            shape.dispose();
+        }
+        staticShapes.clear();
+
+        debugDrawer.dispose();
         dynamicsWorld.dispose();
+        constraintSolver.dispose();
+        broadphase.dispose();
+        dispatcher.dispose();
+        collisionConfig.dispose();
     }
 }
