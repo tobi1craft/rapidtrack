@@ -8,10 +8,10 @@ public class Block {
     private final Vector3 gridPos;
     private final Scene scene;
     private final float friction;
+    private final int rotation;
     private boolean isStart = false;
     private boolean isFinish = false;
     private boolean hasCollision = true;
-    //TODO: Orientation
 
     public Block(Track track, Blocks block, Vector3 gridPosition) {
         this(track, block, gridPosition, 0);
@@ -30,7 +30,12 @@ public class Block {
         }
 
         scene.modelInstance.transform.setTranslation(this.gridPos.cpy().scl(Track.SCALE));
+        rotation = rotationDegrees;
         scene.modelInstance.transform.rotate(Vector3.Y, rotationDegrees);
+    }
+
+    public int getRotation() {
+        return rotation;
     }
 
     public Vector3 getGridPos() {

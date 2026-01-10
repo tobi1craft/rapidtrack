@@ -171,7 +171,6 @@ public class GameScreen extends Menu {
     private void createFinishWalls() {
         ModelBuilder builder = new ModelBuilder();
 
-
         Material material = new Material();
         material.set(PBRColorAttribute.createBaseColorFactor(new Color(1, 0, 0, 0.2f)));
         material.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA));
@@ -192,8 +191,8 @@ public class GameScreen extends Menu {
 
         for (Block block : finishes) {
             ModelInstance instance = new ModelInstance(finishWallModel);
-            Vector3 position = block.getGridPos().cpy().scl(Track.SCALE);
-            instance.transform.setTranslation(position);
+            instance.transform.setTranslation(block.getGridPos().cpy().scl(Track.SCALE));
+            instance.transform.rotate(Vector3.Y, block.getRotation());
 
             Scene scene = new Scene(instance);
             sceneManager.addScene(scene);

@@ -112,7 +112,12 @@ public class Car {
                 raycastCallback.getCollisionObjects().clear();
                 raycastCallback.setClosestHitFraction(1f);
 
-                screen.getPhysicsSystem().getDynamicsWorld().rayTest(worldPos.cpy().add(-16, i * stepSize, 0), worldPos.cpy().add(16, i * stepSize, 0), raycastCallback);
+                if (block.getRotation() == 0 || block.getRotation() == 180)
+                    screen.getPhysicsSystem().getDynamicsWorld().rayTest(worldPos.cpy().add(-16, i * stepSize, 0), worldPos.cpy().add(16, i * stepSize, 0), raycastCallback);
+                else if (block.getRotation() == 90 || block.getRotation() == 270)
+                    screen.getPhysicsSystem().getDynamicsWorld().rayTest(worldPos.cpy().add(0, i * stepSize, -16), worldPos.cpy().add(0, i * stepSize, 16), raycastCallback);
+                else
+                    throw new IllegalStateException("Invalid rotation: " + block.getRotation() + " for finish at " + block.getGridPos() + ". Only 0, 90, 180 and 270 are allowed.");
                 raycasts.put(worldPos.cpy().add(-16, i * stepSize, 0), worldPos.cpy().add(16, i * stepSize, 0));
 
                 if (raycastCallback.hasHit()) {
