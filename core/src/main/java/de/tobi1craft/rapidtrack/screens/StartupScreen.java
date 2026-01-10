@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.tobi1craft.rapidtrack.RapidTrack;
 import de.tobi1craft.rapidtrack.ResourceManager;
@@ -41,7 +40,6 @@ public class StartupScreen extends Menu {
             });
         };
         assets.load("screens/asphalt_bg.png", Texture.class);
-        assets.load("i18n/messages", I18NBundle.class);
     }
 
     @Override

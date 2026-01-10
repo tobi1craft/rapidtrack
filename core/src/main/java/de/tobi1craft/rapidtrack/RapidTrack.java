@@ -30,10 +30,6 @@ public class RapidTrack extends Game {
         return assets;
     }
 
-    public Screens whichScreen() {
-        return screen;
-    }
-
     public void setScreen(Screens screen) {
         setScreen(screen, false);
     }

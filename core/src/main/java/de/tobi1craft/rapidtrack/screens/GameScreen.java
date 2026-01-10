@@ -61,13 +61,14 @@ public class GameScreen extends Menu {
     private final ArrayList<Block> finishes = new ArrayList<>();
     private final InputMultiplexer inputMultiplexer = new InputMultiplexer();
     private final LinkedList<Float> deltaTimes100frames = new LinkedList<>();
+    private final Track track;
     public InputManager inputManager;
     long resetAt;
     private Car car;
     private CameraController cameraController;
     private boolean drawDebug = false;
     private Vector3 startPos = new Vector3();
-    private long startTimestamp = System.nanoTime() + TimeUtils.millisToNanos(3000); //TODO
+    private long startTimestamp = System.nanoTime() + TimeUtils.millisToNanos(3000);
     private long pauseTimestamp;
     private long finishTime;
     private Label timeLabel;
@@ -87,7 +88,7 @@ public class GameScreen extends Menu {
         sceneManager = new SceneManager();
         inputManager = new InputManager(this);
 
-        Track track = new Track();
+        track = new Track();
 
         for (Block block : track.grid) {
             sceneManager.addScene(block.getScene());
@@ -364,6 +365,7 @@ public class GameScreen extends Menu {
     public void dispose() {
         finishWallModel.dispose();
         car.dispose();
+        track.dispose();
         physicsSystem.dispose();
         sceneManager.dispose();
         brdfLUT.dispose();

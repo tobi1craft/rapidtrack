@@ -30,7 +30,7 @@ public class Cam1 extends CameraController {
         newPosition.set(position);
 
         float alpha = Math.min(Math.abs(car.getSpeed()) * delta * 0.5f, 1f);
-        int sign = car.getSpeed() >= 0f ? 1 : -1;
+        int sign = car.getSpeed() >= -0.1f ? 1 : -1;
         camera.position.lerp(newPosition.add(direction.scl(sign * 4f)), alpha);
         camera.position.y = MathUtils.lerp(camera.position.y, camera.position.y + 2f, alpha);
 
