@@ -315,8 +315,9 @@ public class GameScreen extends Menu {
             physicsSystem.update(delta);
 
             if (pauseTimestamp == 0) {
-                if (!isFinished()) timeLabel.setText(formatTime(timer()));
-                else timeLabel.setText(formatTime(finishTime));
+                if (isFinished()) timeLabel.setText(formatTime(finishTime));
+                else if (timer() < 0) timeLabel.setText("");
+                else timeLabel.setText(formatTime(timer()));
             }
 
             deltaTimes100frames.addLast(delta);
