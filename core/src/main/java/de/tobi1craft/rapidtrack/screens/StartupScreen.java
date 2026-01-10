@@ -29,11 +29,9 @@ public class StartupScreen extends Menu {
             background.setSize(width, height);
 
             table.clearChildren();
-            table.add().expandY().row();
-            table.add().expandY().row();
 
             TextButton start = UI.getTextButton(height * 0.15f, "start");
-            table.add(start).expandY();
+            table.add(start).expandY().bottom().pad(height * 0.05f);
 
             // start the game when the button is clicked
             start.addListener(new ChangeListener() {
@@ -42,7 +40,7 @@ public class StartupScreen extends Menu {
                 }
             });
         };
-        assets.load("screens/main_temp.jpg", Texture.class);
+        assets.load("screens/asphalt_bg.png", Texture.class);
         assets.load("i18n/messages", I18NBundle.class);
     }
 

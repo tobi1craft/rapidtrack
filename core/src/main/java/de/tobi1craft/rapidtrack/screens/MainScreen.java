@@ -19,7 +19,7 @@ public class MainScreen extends Menu {
     public MainScreen() {
         stage = new Stage(new ScreenViewport(), ResourceManager.getInstance().getBatch());
 
-        Image background = new Image(assets.get("screens/main_temp.jpg", Texture.class));
+        Image background = new Image(assets.get("screens/asphalt_bg.png", Texture.class));
         stage.addActor(background);
 
         Table table = new Table();

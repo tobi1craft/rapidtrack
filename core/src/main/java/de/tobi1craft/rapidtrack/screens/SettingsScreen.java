@@ -2,12 +2,10 @@ package de.tobi1craft.rapidtrack.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.tobi1craft.rapidtrack.MusicManager;
@@ -21,11 +19,16 @@ public class SettingsScreen extends Menu {
     public SettingsScreen(Preferences settings, MusicManager musicManager) {
         stage = new Stage(new ScreenViewport(), ResourceManager.getInstance().getBatch());
 
+        Image background = new Image(assets.get("screens/asphalt_bg.png", Texture.class));
+        stage.addActor(background);
+
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
 
-        resize = (_, height) -> {
+        resize = (width, height) -> {
+            background.setSize(width, height);
+
             table.clearChildren();
 
 
