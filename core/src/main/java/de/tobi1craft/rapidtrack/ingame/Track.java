@@ -12,12 +12,12 @@ import java.util.EnumMap;
 import java.util.List;
 
 public class Track {
-    //TODO: - Map/List = blocks;
+    //TODO: file based, determine used blocks
 
     public static final Vector3 SCALE = new Vector3(32, 8, 32);
 
     public final List<Block> grid = new ArrayList<>();
-    //? EnumMap -> Map aber nur ein Enum für alle möglichen Keys
+    //! EnumMap -> Map aber nur ein Enum für alle möglichen Keys
     private final java.util.Map<Blocks, SceneAsset> blocks = new EnumMap<>(Blocks.class);
 
     public Track() {

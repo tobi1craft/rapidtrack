@@ -82,7 +82,6 @@ public class FreeCam extends CameraController {
 
     @Override
     public void update(float delta) {
-        //TODO: use global input processor?!
         float scaledSpeed = (float) Math.pow(200, (speed - 10) / 20); //! Skalierter output, damit man nicht ewig scrollen muss
         for (int key : keys) {
             switch (key) {
