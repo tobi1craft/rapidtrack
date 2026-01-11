@@ -62,7 +62,7 @@ public class GameScreen extends Menu {
     private final InputMultiplexer inputMultiplexer = new InputMultiplexer();
     private final LinkedList<Float> deltaTimes100frames = new LinkedList<>();
     private final Track track;
-    public InputManager inputManager;
+    public final InputManager inputManager;
     long resetAt;
     private Car car;
     private CameraController cameraController;

@@ -51,6 +51,6 @@ public abstract class Menu implements Screen {
 
     @Override
     public void dispose() {
-        if(stage != null) stage.dispose();
+        if (stage != null) stage.dispose();
     }
 }

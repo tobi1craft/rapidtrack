@@ -19,7 +19,7 @@ import java.util.HashMap;
 
 public class Car {
 
-    public static HashMap<Vector3, Vector3> raycasts = new HashMap<>();
+    public static final HashMap<Vector3, Vector3> raycasts = new HashMap<>();
     private final GameScreen screen;
     private final ArrayList<Block> finishes;
     private final CarPhysics PHYSICS;
