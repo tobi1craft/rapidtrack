@@ -4,7 +4,7 @@ plugins {
 }
 
 allprojects {
-    apply(plugin = "idea")
+    pluginManager.apply("idea")
 
     // This allows you to "Build and run using IntelliJ IDEA", an option in IDEA's Settings.
 
@@ -17,7 +17,7 @@ allprojects {
 }
 
 subprojects {
-    apply(plugin = "java-library")
+    pluginManager.apply("java-library")
 
     version = project.property("projectVersion") as String
     extra["displayName"] = "RapidTrack"
@@ -40,7 +40,7 @@ subprojects {
     }
 
     tasks.register<Sync>("syncAssets") {
-        if(!assetsTargetDir.exists()) assetsTargetDir.mkdir()
+        description = "Syncs the shared asset directories into this subproject's assets directory."
         into(assetsTargetDir)
 
         assetsSourceDirs.forEach { sourceDir ->
@@ -53,6 +53,7 @@ subprojects {
     }
 
     tasks.register<Delete>("deleteSyncedAssets") {
+        description = "Deletes assets that were synced into this subproject's assets directory."
         if(assetsTargetDir.exists()) delete(assetsTargetDir)
     }
 
@@ -77,6 +78,7 @@ subprojects {
     // From https://lyze.dev/2021/04/29/libGDX-Internal-Assets-List/
     // The article can be helpful when using assets.txt in your project.
     tasks.register("generateAssetList") {
+        description = "Generates an assets.txt file listing all synced assets."
         dependsOn("syncAssets")
         val assetsFolder = file("src/main/assets/")
         val assetsFile = File(assetsFolder, "assets.txt")
@@ -85,7 +87,7 @@ subprojects {
 
         doLast {
             // delete that file in case we've already created it
-            assetsFile.delete()
+            delete(assetsFile)
 
             // iterate through all files inside that folder,
             // convert it to a relative path

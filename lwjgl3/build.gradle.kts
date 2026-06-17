@@ -7,7 +7,7 @@ buildscript {
     dependencies {
         classpath("io.github.fourlastor:construo:2.1.0")
         if (property("enableGraalNative") == "true") {
-            classpath("org.graalvm.buildtools.native:org.graalvm.buildtools.native.gradle.plugin:0.11.3")
+            classpath("org.graalvm.buildtools.native:org.graalvm.buildtools.native.gradle.plugin:1.1.2")
         }
     }
 }
@@ -15,7 +15,7 @@ buildscript {
 plugins {
     application
     id("io.github.fourlastor.construo") version "2.1.0"
-    id("org.graalvm.buildtools.native") version "0.11.3"
+    id("org.graalvm.buildtools.native") version "1.1.2"
 }
 
 //sourceSets["main"].resources.srcDirs.plusAssign(rootProject.file("assets"))
@@ -93,6 +93,7 @@ construo {
 
 
 tasks.register("dist") {
+    description = "Builds the runnable desktop distribution jar."
     dependsOn("jar")
 }
 

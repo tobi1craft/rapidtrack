@@ -47,7 +47,7 @@ public class RapidTrack extends Game {
 
     @Override
     public void create() {
-        Gdx.app.setLogLevel(Application.LOG_DEBUG); //TODO: Production
+        Gdx.app.setLogLevel(Application.LOG_ERROR);
         instance = this;
         settings = Gdx.app.getPreferences("RapidTrack-Settings");
         assets = new RTAssetManager();

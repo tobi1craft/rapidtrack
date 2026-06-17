@@ -23,8 +23,8 @@ public class FreeCam extends CameraController {
         this.camera = camera;
         // Init yaw and pitch from the current camera direction
         Vector3 dir = camera.direction.cpy().nor();
-        pitch = MathUtils.asinDeg(-dir.y);
-        yaw = MathUtils.atan2Deg(dir.x, dir.z); //TODO: arctan2 erklären
+        pitch = MathUtils.asinDeg(-dir.y); //up/down
+        yaw = MathUtils.atan2Deg(dir.x, dir.z); //left/right: full circle degree direction from combined x, z directions
     }
 
     @Override
